@@ -44,6 +44,30 @@ def _(mo):
 
 @app.cell
 def _():
+    sample = '''1abc2
+    pqr3stu8vwx
+    a1b2c3d4e5f
+    treb7uchet'''
+    sample
+    return (sample,)
+
+
+@app.cell
+def _(sample):
+    sample_lines = sample.splitlines()
+    sample_lines
+    return (sample_lines,)
+
+
+@app.cell
+def _(sample_lines):
+    x = sample_lines[2]
+    x
+    return (x,)
+
+
+@app.cell
+def _():
     return
 
 
