@@ -67,6 +67,147 @@ def _(sample_lines):
 
 
 @app.cell
+def _(x):
+    ## for loop to find first digit of calibration value
+    for _char in x:
+        if _char.isdigit() == True:
+            first = _char
+            break
+    first
+    return (first,)
+
+
+@app.cell
+def _(x):
+    ## for loop to find second digit of calibration value
+    for _char in x:
+        if _char.isdigit() == True:
+            last = _char
+    last
+    return (last,)
+
+
+@app.cell
+def _(first, last):
+    first+last
+    return
+
+
+@app.cell
+def _():
+    def cal_value(x):
+        for char in x:
+            if char.isdigit() == True:
+                first = char
+                break
+        for char in x:
+            if char.isdigit() == True:
+                last = char
+        value = int(first+last)
+        return value
+    
+    return (cal_value,)
+
+
+@app.cell
+def _(cal_value, x):
+    cal_value(x)
+    return
+
+
+@app.cell
+def _(cal_value, sample_lines):
+    # set initital calibration value to 0
+    _total_cal_value = 0
+    # execute cal_value() on each line in the sample adding each line to the total 
+    for line in sample_lines:
+        _total_cal_value += cal_value(line)
+    _total_cal_value
+    
+    return (line,)
+
+
+@app.cell
+def _(cal_value, sample):
+    # create function that can run on a string
+    def _calibration_sum(text):
+        # turn text into list
+        text_lines = text.splitlines()
+        # set total cal value to 0
+        total_cal_value = 0
+        # get cal value for each line and add it to the total cal value
+        for line in text_lines:
+            total_cal_value += cal_value(line)
+        #return sum of all the line calibration values
+        return total_cal_value
+
+    _calibration_sum(sample)
+    return
+
+
+@app.cell
+def _():
+    # we need to read in the text file that we want to run our function on
+    file_path = './data/day01.txt'
+
+    with open(file_path, "r", encoding="utf-8") as file:
+            text = file.read()
+    text
+    return file, file_path, text
+
+
+@app.cell
+def _(cal_value):
+    # create function that can run given a text file
+    def calibration_sum(file_path):
+        with open(file_path, "r", encoding="utf-8") as file:
+            text = file.read()
+        # turn text into list
+        text_lines = text.splitlines()
+        # set total cal value to 0
+        total_cal_value = 0
+        # get cal value for each line and add it to the total cal value
+        for line in text_lines:
+            total_cal_value += cal_value(line)
+        #return sum of all the line calibration values
+        return total_cal_value
+    return (calibration_sum,)
+
+
+@app.cell
+def _(calibration_sum, file_path):
+    # this function should will now return the total calibration value for our file
+    calibration_sum(file_path)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        ##Part Two
+
+        Your calculation isn't quite right. It looks like some of the digits are actually **spelled out with letters:** one, two, three, four, five, six, seven, eight, and nine **also** count as valid "digits".
+
+        Equipped with this new information, you now need to find the real first and last digit on each line. For example:
+
+        two1nine<br>
+        eightwothree<br>
+        abcone2threexyz<br>
+        xtwone3four<br>
+        4nineeightseven2<br>
+        zoneight234<br>
+        7pqrstsixteen<br>
+
+        In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76. Adding these together produces **281**.
+
+        **What is the sum of all of the calibration values?**
+        """
+    )
+    return
+
+
+@app.cell
 def _():
     return
 
