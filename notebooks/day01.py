@@ -225,6 +225,40 @@ def _(sample2):
 
 
 @app.cell
+def _(sample2_lines):
+    y = sample2_lines[0]
+
+    positions = {}
+    for i, char in enumerate(y):
+        if char.isdigit():
+            positions[i] = char
+
+    positions
+    return char, i, positions, y
+
+
+@app.cell
+def _():
+    # Create a dictionary for number words to digits
+    number_map = {
+        'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5',
+        'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'
+    }
+
+    number_map.items()
+    return (number_map,)
+
+
+@app.cell
+def _(number_map, y):
+    # identifying a word in a string
+    for word, digit in number_map.items():
+        if word in y:
+            print(number_map[word])
+    return digit, word
+
+
+@app.cell
 def _():
     return
 
