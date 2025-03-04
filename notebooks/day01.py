@@ -105,7 +105,6 @@ def _():
                 last = char
         value = int(first+last)
         return value
-    
     return (cal_value,)
 
 
@@ -123,7 +122,6 @@ def _(cal_value, sample_lines):
     for line in sample_lines:
         _total_cal_value += cal_value(line)
     _total_cal_value
-    
     return (line,)
 
 
@@ -205,6 +203,25 @@ def _(mo):
         """
     )
     return
+
+
+@app.cell
+def _():
+    sample2 = '''two1nine
+    eightwothree
+    abcone2threexyz
+    xtwone3four
+    4nineeightseven2
+    zoneight234
+    7pqrstsixteen'''
+    return (sample2,)
+
+
+@app.cell
+def _(sample2):
+    sample2_lines = sample2.splitlines()
+    sample2_lines
+    return (sample2_lines,)
 
 
 @app.cell
