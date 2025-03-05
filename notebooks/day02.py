@@ -72,11 +72,53 @@ def _(sample_lines):
 @app.cell
 def _(sample_line):
     x = sample_line.split(': ')[1].split('; ')
-    for i in x:
-        rounds = i.split(', ')
+    for _i in x:
+        rounds = _i.split(', ')
         print(rounds)
-    
-    return i, rounds, x
+    return rounds, x
+
+
+@app.cell
+def _(x):
+    [i.split(', ') for i in x]
+    return
+
+
+@app.cell
+def _(x):
+    _flattened = [item for sublist in x for item in sublist.split(', ')]
+    print(_flattened)
+    return
+
+
+@app.cell
+def _(x):
+    _flattened = [_item for _sublist in x for _item in _sublist.split(', ')]
+    print(_flattened)
+
+
+    _dict = {}
+    for _i in _flattened:
+        print(_i.split(' '))
+        _quant = _i.split(' ')[0]
+        _color = _i.split(' ')[1]
+        if _color in _dict:  # check if we have seen the color before
+            _dict[_color] = max(_dict[_color], _quant) # keep the maximum value seen
+            print(_dict)
+        # else if color has not been seen yet, add it to the dictionary
+        else:
+            _dict[_color] = _quant
+            print(_dict)
+    print(_dict)
+
+    sample_dict = _dict
+    return (sample_dict,)
+
+
+@app.cell
+def _(sample_dict):
+    sample_dict
+    return
 
 
 @app.cell
