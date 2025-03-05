@@ -7,7 +7,8 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    return (mo,)
+    import re
+    return mo, re
 
 
 @app.cell(hide_code=True)
@@ -149,9 +150,9 @@ def _():
     file_path = './data/day01.txt'
 
     with open(file_path, "r", encoding="utf-8") as file:
-            text = file.read()
-    text
-    return file, file_path, text
+            day01 = file.read()
+    day01
+    return day01, file, file_path
 
 
 @app.cell
@@ -251,11 +252,89 @@ def _():
 
 @app.cell
 def _(number_map, y):
-    # identifying a word in a string
-    for word, digit in number_map.items():
-        if word in y:
-            print(number_map[word])
-    return digit, word
+    # checking a string for spelled-out numbers
+    _dict ={}
+    for _word, _digit in number_map.items():
+        _position = y.find(_word)
+        if _position != -1:
+            _dict[_position] = number_map[_word]
+            print(_word, _position)
+            print(_dict)
+
+    # checking to find digits
+    for _i, _char in enumerate(y):
+        if _char.isdigit():
+            _dict[_i] = str(_char)
+            print(_i, _char)
+    print(_dict)
+
+    test = _dict
+    return (test,)
+
+
+@app.cell
+def _(test):
+    print(test[min(test.keys())])
+    print(test[max(test.keys())])
+    print(test[min(test.keys())]+test[max(test.keys())])
+    return
+
+
+@app.cell
+def _(number_map, re):
+    def cal_value_v2(y):
+        # checking a string for spelled-out numbers
+        dict ={}
+        for word, digit in number_map.items():
+            # Find all occurrences of the word
+            for match in re.finditer(word, y):
+                dict[match.start()] = digit
+ 
+        # checking to find digits
+        for i, char in enumerate(y):
+            if char.isdigit():
+                dict[i] = str(char)
+        cal_val = dict[min(dict.keys())]+dict[max(dict.keys())]
+        return int(cal_val)
+    return (cal_value_v2,)
+
+
+@app.cell
+def _(cal_value_v2, y):
+    cal_value_v2(y)
+    return
+
+
+@app.cell
+def _(cal_value_v2):
+    def calibration_sum_v2(y):
+        sum = 0
+        for line in y.splitlines():
+            sum += cal_value_v2(line)
+        return sum
+        
+    return (calibration_sum_v2,)
+
+
+@app.cell
+def _(calibration_sum_v2, sample2):
+    calibration_sum_v2(sample2)
+    return
+
+
+@app.cell
+def _(calibration_sum_v2, day01):
+    calibration_sum_v2(day01)
+    return
+
+
+@app.cell
+def _(cal_value_v2):
+    # this answer should be 71
+    troubleshoot = 'z7onetwonec'
+
+    cal_value_v2(troubleshoot)
+    return (troubleshoot,)
 
 
 @app.cell
