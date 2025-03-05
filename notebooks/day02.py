@@ -123,6 +123,109 @@ def _(sample_dict):
 
 @app.cell
 def _():
+    # function that will store the highest quantity pulled for each color
+    def game_count_dict(game_record):
+        # create empty dict
+        dict = {}
+        # split line into game id and counts
+        dict['game'] = int([i for i in game_record.split(': ')][0].split(' ')[1])
+        # create a list of the rounds within the game
+        rounds = [i.split(', ') for i in game_record.split(': ')[1].split('; ')]
+        # run through each round
+        for round in rounds:
+            # run through each individual draw in a round
+            for draw in round:
+                quant = draw.split(' ')[0]
+                color = draw.split(' ')[1]
+                if color in dict:  # check if we have seen the color before
+                    dict[color] = max(dict[color], int(quant)) # keep the maximum value seen
+                # else if color has not been seen yet, add it to the dictionary
+                else:
+                    dict[color] = int(quant)
+        return dict
+    
+    return (game_count_dict,)
+
+
+@app.cell
+def _(game_count_dict, sample_line):
+    test = game_count_dict(sample_line)
+    test['game']
+    return (test,)
+
+
+@app.cell
+def _():
+    def possibility_check(game_dict):
+        possible_dict = {'red': 12, 'green': 13, 'blue': 14}
+        if game_dict['red'] > possible_dict['red']:
+            return False
+        elif game_dict['green'] > possible_dict['green']:
+            return False
+        elif game_dict['blue'] > possible_dict['blue']:
+            return False
+        else:
+            return True
+    return (possibility_check,)
+
+
+@app.cell
+def _(possibility_check, test):
+    possibility_check(test)
+    return
+
+
+@app.cell
+def _(possibility_check, test):
+    test_count = 0
+    if possibility_check(test):
+        test_count += test['game']
+    test_count
+    return (test_count,)
+
+
+@app.cell
+def _(game_count_dict, possibility_check):
+    def records_check(records):
+        # create blank id count
+        id_count = 0
+        # run on each game by looping through each line of the records
+        for record in records.splitlines():
+            game = game_count_dict(record)
+            # run possibility check and add game id to count if True
+            if possibility_check(game):
+                id_count += game['game']
+        return id_count
+        
+            
+    return (records_check,)
+
+
+@app.cell
+def _(records_check, sample):
+    records_check(sample)
+    return
+
+
+@app.cell
+def _():
+    # we need to read in the text file that we want to run our function on
+    file_path = './data/day02.txt'
+
+    with open(file_path, "r", encoding="utf-8") as file:
+            day02 = file.read()
+    day02
+    return day02, file, file_path
+
+
+@app.cell
+def _(day02, records_check):
+    records_check(day02)
+    return
+
+
+@app.cell
+def _():
     return
 
 
