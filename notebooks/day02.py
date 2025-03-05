@@ -254,6 +254,36 @@ def _(mo):
 
 
 @app.cell
+def _(game_count_dict):
+    # we need to know the maximum number of each ball pulled in each game
+    # our game_count_dict function already does this for us
+    # we need a new function to get the sum of the powers of each game
+    def game_sum_of_powers(records):
+        # create running sum of power count
+        sum_of_powers = 0
+        for record in records.splitlines():
+            game = game_count_dict(record)
+            # multiply the max count of each color ball this game to get power
+            game_power = game['red']*game['green']*game['blue']
+            # add game power to running count
+            sum_of_powers += game_power
+        return sum_of_powers
+    return (game_sum_of_powers,)
+
+
+@app.cell
+def _(game_sum_of_powers, sample):
+    game_sum_of_powers(sample)
+    return
+
+
+@app.cell
+def _(day02, game_sum_of_powers):
+    game_sum_of_powers(day02)
+    return
+
+
+@app.cell
 def _():
     return
 
