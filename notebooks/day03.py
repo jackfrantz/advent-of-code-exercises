@@ -140,15 +140,43 @@ def _(find_numbers, sample):
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell
+def _():
     def find_borders(num_coords):
+        # empty list of the coordinates for cells that border numbers
         border_coords = []
-        for (row_idx, col_idx) in num_coords:
+        for row_idx, col_idx in num_coords:
+            border_coords.append((row_idx-1, col_idx+1))
         
-    """,
-    name="_"
-)
+        
+        
+    return (find_borders,)
+
+
+@app.cell
+def _(find_borders, find_numbers, sample):
+    find_borders(find_numbers(sample))
+    return
+
+
+@app.cell
+def _(sample_lines):
+    x = sample_lines[0]
+    x_split = x.split('.')
+    x_split
+    return x, x_split
+
+
+@app.cell
+def _(sample_lines):
+    for line in sample_lines:
+        print(line.split('.'))
+    return (line,)
+
+
+@app.cell
+def _():
+    return
 
 
 if __name__ == "__main__":
