@@ -81,16 +81,13 @@ def _():
         lines = file.splitlines()
         # label each row with an index
         for row_idx, line in enumerate(lines):
-            print(row_idx, line)
             # label each char in row with an index
             for col_idx, char in enumerate(line):
                 # if char is not a number or a '.' it is a symbol
                 if not char.isdigit() and char != '.':
                     # store coordinates of symbol
                     symbol_positions.append((row_idx, col_idx))
-                    print(f'Symbol at row {row_idx}, column {col_idx}')
-        print(symbol_positions)
-            
+        return symbol_positions
         #print(lines)
     return (find_symbols,)
 
@@ -125,7 +122,33 @@ def _():
 
 @app.cell
 def _():
+    def find_numbers(file):
+        # copy of find_symbols() funct to find number positions
+        number_positions = []
+        lines = file.splitlines()
+        for row_idx, line in enumerate(lines):
+            for col_idx, char in enumerate(line):
+                if char.isdigit():
+                    number_positions.append((row_idx, col_idx))
+        return number_positions
+    return (find_numbers,)
+
+
+@app.cell
+def _(find_numbers, sample):
+    find_numbers(sample)
     return
+
+
+app._unparsable_cell(
+    r"""
+    def find_borders(num_coords):
+        border_coords = []
+        for (row_idx, col_idx) in num_coords:
+        
+    """,
+    name="_"
+)
 
 
 if __name__ == "__main__":
