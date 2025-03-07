@@ -130,6 +130,7 @@ def _():
             for col_idx, char in enumerate(line):
                 if char.isdigit():
                     number_positions.append((row_idx, col_idx))
+                
         return number_positions
     return (find_numbers,)
 
@@ -145,33 +146,118 @@ def _():
     def find_borders(num_coords):
         # empty list of the coordinates for cells that border numbers
         border_coords = []
-        for row_idx, col_idx in num_coords:
-            border_coords.append((row_idx-1, col_idx+1))
-        
-        
-        
+        row = num_coords[0]
+        col = num_coords[1]
+        for pos in list(range(-1,2)):
+            border_coords.append((row+pos, col))
+            border_coords.append((row, col+pos))
+            border_coords.append((row+pos, col+pos))
+            border_coords.append((row+pos, col-pos))
+        borders = list(set(border_coords))
+        return(borders)
     return (find_borders,)
 
 
 @app.cell
 def _(find_borders, find_numbers, sample):
-    find_borders(find_numbers(sample))
+    _x = find_numbers(sample)[0]
+    print(_x)
+    print(find_borders(_x))
     return
 
 
 @app.cell
-def _(sample_lines):
-    x = sample_lines[0]
-    x_split = x.split('.')
-    x_split
-    return x, x_split
+def _(find_borders, find_symbols, sample):
+    # check each coordinate that borders (0, 2)
+    for coord in find_borders((0, 2)):
+        # check if coordinate is in our list of symbol coordinates
+        if coord in find_symbols(sample):
+            print('symbol found')
+    return (coord,)
 
 
 @app.cell
-def _(sample_lines):
-    for line in sample_lines:
-        print(line.split('.'))
-    return (line,)
+def _(find_symbols, sample):
+    # creates list of coordinates for all symbols in text
+    find_symbols(sample)
+    return
+
+
+@app.cell
+def _(find_borders):
+    # creates list of the bordering coordinates of a cell
+    find_borders((0,0))
+    return
+
+
+@app.cell
+def _(find_borders, find_symbols, sample):
+    # Psuedocode
+
+    def sum_parts(text):
+        # starting sum of 0
+        sum = 0
+        # string that we will append digits to
+        current_number = ''
+        # coordinates of the digits of the number we are working on
+        current_positions = []
+    
+        # split our input into lines
+        lines = text.splitlines()
+        symbols = find_symbols(text)
+    
+        # loop through each line, creating a row index 
+        for row_idx, line in enumerate(lines):
+            # loop through each char, creating a column index
+            for col_idx, char in enumerate(line):
+                # check if character is a digit 
+                if char.isdigit():
+                    # add it to the current_number
+                    current_number += char
+                    # add the coordinates to current_positions
+                    current_positions.append(find_borders((row_idx, col_idx)))
+                # if not a digit but you were just working on a current number
+                elif not char.isdigit() and len(current_number) > 0:
+                    for coord in [item for sublist in current_positions for item in sublist]:
+                        # check if coordinate is in our list of symbol coordinates
+                        if coord in find_symbols(sample):
+                            sum += int(current_number)
+                            print(current_number)
+                            print(sum)
+                    # if no symbol found, reset current number
+                    current_number = ''
+                    current_positions = []
+                # if not a digit and not working on a number anymo
+                else:
+                    current_number = ''
+                    current_positions = []
+        
+        print(current_number)
+        print(current_positions)
+        print(sum)
+            
+        
+            
+            
+
+        # add num to 
+        #sum += num
+    return (sum_parts,)
+
+
+@app.cell
+def _(sample, sum_parts):
+    sum_parts(sample)
+    return
+
+
+@app.cell
+def _():
+    _num = ''
+    _num += '1'
+    _num += '2'
+    _num
+    return
 
 
 @app.cell
