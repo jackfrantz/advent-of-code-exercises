@@ -67,7 +67,59 @@ def _():
 
 @app.cell
 def _(sample):
-    sample.splitlines()
+    sample_lines = sample.splitlines()
+    sample_lines
+    return (sample_lines,)
+
+
+@app.cell
+def _():
+    def find_symbols(file):
+        # empty list to store symbol positions
+        symbol_positions = []
+        # split file into lines
+        lines = file.splitlines()
+        # label each row with an index
+        for row_idx, line in enumerate(lines):
+            print(row_idx, line)
+            # label each char in row with an index
+            for col_idx, char in enumerate(line):
+                # if char is not a number or a '.' it is a symbol
+                if not char.isdigit() and char != '.':
+                    # store coordinates of symbol
+                    symbol_positions.append((row_idx, col_idx))
+                    print(f'Symbol at row {row_idx}, column {col_idx}')
+        print(symbol_positions)
+            
+        #print(lines)
+    return (find_symbols,)
+
+
+@app.cell
+def _(find_symbols, sample):
+    find_symbols(sample)
+    return
+
+
+@app.cell
+def _():
+    # for a symbol at (row 1, col 3) what are the eligible border positions
+    # (row 0, col 2-4)
+    # (row 1, col 2 or col 4)
+    # (row 2, col 2-4)
+    # so anything in the row +-1, and the col+-1 is eligible
+    return
+
+
+@app.cell
+def _():
+    # after creating this function, I am realizing it may be easier to find the numbers first, then check if a symbol borders them
+    return
+
+
+@app.cell
+def _():
+    # we can make a function that finds all the numbers, and their border coordinates, and check if any of the coordinates are in our list of symbol coordinates
     return
 
 
