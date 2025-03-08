@@ -130,7 +130,7 @@ def _():
             for col_idx, char in enumerate(line):
                 if char.isdigit():
                     number_positions.append((row_idx, col_idx))
-                
+
         return number_positions
     return (find_numbers,)
 
@@ -191,7 +191,7 @@ def _(find_borders):
 
 
 @app.cell
-def _(find_borders, find_symbols, sample):
+def _(find_borders, find_symbols):
     # Psuedocode
 
     def sum_parts(text):
@@ -201,47 +201,41 @@ def _(find_borders, find_symbols, sample):
         current_number = ''
         # coordinates of the digits of the number we are working on
         current_positions = []
-    
+
         # split our input into lines
         lines = text.splitlines()
         symbols = find_symbols(text)
-    
+
         # loop through each line, creating a row index 
         for row_idx, line in enumerate(lines):
             # loop through each char, creating a column index
             for col_idx, char in enumerate(line):
                 # check if character is a digit 
                 if char.isdigit():
+                    print(f'{char} is a digit')
                     # add it to the current_number
                     current_number += char
                     # add the coordinates to current_positions
                     current_positions.append(find_borders((row_idx, col_idx)))
                 # if not a digit but you were just working on a current number
                 elif not char.isdigit() and len(current_number) > 0:
-                    for coord in [item for sublist in current_positions for item in sublist]:
+                    # loop through each coord in current_positions and flatten the list so we can take only unique coords
+                    for border_coord in set([coord for sublist in current_positions for coord in sublist]):
                         # check if coordinate is in our list of symbol coordinates
-                        if coord in find_symbols(sample):
+                        if border_coord in symbols:
                             sum += int(current_number)
-                            print(current_number)
-                            print(sum)
-                    # if no symbol found, reset current number
+                            print(f'{current_number} borders a symbol')
+                            print(f'Sum is now {sum}')
+                            break
+                        else:
+                            print(f'{current_number} does not border a symbol')
+                    # if no symbol found, reset current number   
                     current_number = ''
                     current_positions = []
-                # if not a digit and not working on a number anymo
-                else:
-                    current_number = ''
-                    current_positions = []
-        
-        print(current_number)
-        print(current_positions)
+                    print(f'Number reset: {current_number}')
+            print('end of line')
         print(sum)
-            
-        
-            
-            
-
-        # add num to 
-        #sum += num
+        return sum
     return (sum_parts,)
 
 
@@ -252,11 +246,8 @@ def _(sample, sum_parts):
 
 
 @app.cell
-def _():
-    _num = ''
-    _num += '1'
-    _num += '2'
-    _num
+def _(sample):
+    print(sample)
     return
 
 
