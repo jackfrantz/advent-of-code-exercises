@@ -192,9 +192,9 @@ def _(find_borders):
 
 @app.cell
 def _(find_borders, find_symbols):
-    # Psuedocode
+    # This function has print functions built in for debugging purposes
 
-    def sum_parts(text):
+    def sum_parts(engine_scheme):
         # starting sum of 0
         sum = 0
         # string that we will append digits to
@@ -203,16 +203,17 @@ def _(find_borders, find_symbols):
         current_positions = []
 
         # split our input into lines
-        lines = text.splitlines()
-        symbols = find_symbols(text)
+        lines = engine_scheme.splitlines()
+        symbols = find_symbols(engine_scheme)
 
         # loop through each line, creating a row index 
         for row_idx, line in enumerate(lines):
+            #print(f'Row {row_idx} Start')
             # loop through each char, creating a column index
             for col_idx, char in enumerate(line):
                 # check if character is a digit 
                 if char.isdigit():
-                    print(f'{char} is a digit')
+                    #print(f'{char} is a digit')
                     # add it to the current_number
                     current_number += char
                     # add the coordinates to current_positions
@@ -224,17 +225,27 @@ def _(find_borders, find_symbols):
                         # check if coordinate is in our list of symbol coordinates
                         if border_coord in symbols:
                             sum += int(current_number)
-                            print(f'{current_number} borders a symbol')
-                            print(f'Sum is now {sum}')
+                            #print(f'{current_number} borders a symbol')
+                            #print(f'Sum is now {sum}')
                             break
-                        else:
-                            print(f'{current_number} does not border a symbol')
                     # if no symbol found, reset current number   
                     current_number = ''
                     current_positions = []
-                    print(f'Number reset: {current_number}')
-            print('end of line')
-        print(sum)
+                    #print(f'Number reset: {current_number}')
+            # At end of row if there is a current number, check its borders
+            if len(current_number) > 0:
+                for border_coord in set([coord for sublist in current_positions for coord in sublist]):
+                        # check if coordinate is in our list of symbol coordinates
+                        if border_coord in symbols:
+                            sum += int(current_number)
+                            #print(f'{current_number} borders a symbol')
+                            #print(f'Sum is now {sum}')
+                # After the symbol check, reset current number   
+                current_number = ''
+                current_positions = []
+                #print(f'Number reset: {current_number}')
+            #print(f'end of Row {row_idx}')
+        #print(sum)
         return sum
     return (sum_parts,)
 
@@ -248,6 +259,186 @@ def _(sample, sum_parts):
 @app.cell
 def _(sample):
     print(sample)
+    return
+
+
+@app.cell
+def _():
+    # we need to read in the text file that we want to run our function on
+    file_path = './data/day03.txt'
+
+    with open(file_path, "r", encoding="utf-8") as file:
+            day03 = file.read()
+    #day03
+    return day03, file, file_path
+
+
+@app.cell
+def _(day03, sum_parts):
+    sum_parts(day03)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        #Part Two
+        The engineer finds the missing part and installs it in the engine! As the engine springs to life, you jump in the closest gondola, finally ready to ascend to the water source.
+
+        You don't seem to be going very fast, though. Maybe something is still wrong? Fortunately, the gondola has a phone labeled "help", so you pick it up and the engineer answers.
+
+        Before you can explain the situation, she suggests that you look out the window. There stands the engineer, holding a phone in one hand and waving with the other. You're going so slowly that you haven't even left the station. You exit the gondola.
+
+        The missing part wasn't the only issue - one of the gears in the engine is wrong. A gear is any * symbol that is adjacent to exactly two part numbers. Its gear ratio is the result of multiplying those two numbers together.
+
+        This time, you need to find the gear ratio of every gear and add them all up so that the engineer can figure out which gear needs to be replaced.
+
+        Consider the same engine schematic again:
+
+        ```
+        467..114..
+        ...*......
+        ..35..633.
+        ......#...
+        617*......
+        .....+.58.
+        ..592.....
+        ......755.
+        ...$.*....
+        .664.598..
+        ```
+
+        In this schematic, there are two gears. The first is in the top left; it has part numbers 467 and 35, so its gear ratio is 16345. The second gear is in the lower right; its gear ratio is 451490. (The * adjacent to 617 is not a gear because it is only adjacent to one part number.) Adding up all of the gear ratios produces 467835.
+
+        What is the sum of all of the gear ratios in your engine schematic?
+
+
+        """
+    )
+    return
+
+
+@app.cell
+def _():
+    # function to find the coordinates of all gears
+    def find_gears(engine_scheme):
+        # empty list to store gear positions
+        gear_positions = []
+        # split engine schematic into lines
+        lines = engine_scheme.splitlines()
+        # label each row with an index
+        for row_idx, line in enumerate(lines):
+            # label each char in row with an index
+            for col_idx, char in enumerate(line):
+                # if char is a gear ('*') add its position
+                if char == '*':
+                    # store coordinates of symbol
+                    gear_positions.append((row_idx, col_idx))
+        return gear_positions
+        #print(lines)
+    return (find_gears,)
+
+
+@app.cell
+def _(find_gears, sample):
+    find_gears(sample)
+    return
+
+
+@app.cell
+def _(find_borders, find_gears):
+    def find_gear_parts(engine_scheme):
+        gear_dict = {}
+        # string that we will append digits to
+        current_number = ''
+        # coordinates of the digits of the number we are working on
+        current_positions = []
+
+        # split our input into lines
+        lines = engine_scheme.splitlines()
+        gears = find_gears(engine_scheme)
+        sum = 0
+
+        # loop through each line, creating a row index 
+        for row_idx, line in enumerate(lines):
+            #print(f'Row {row_idx} Start')
+            # loop through each char, creating a column index
+            for col_idx, char in enumerate(line):
+                # check if character is a digit 
+                if char.isdigit():
+                    #print(f'{char} is a digit')
+                    # add it to the current_number
+                    current_number += char
+                    # add the coordinates to current_positions
+                    current_positions.append(find_borders((row_idx, col_idx)))
+                    # if not a digit but you were just working on a current number
+                elif not char.isdigit() and len(current_number) > 0:
+                    # loop through each coord in current_positions and flatten the list so we can take only unique coords
+                    for border_coord in set([coord for sublist in current_positions for coord in sublist]):
+                        # check if coordinate is in our list of symbol coordinates
+                        if border_coord in gears:
+                            if border_coord in list(gear_dict.keys()):
+                                gear_ratio = int(gear_dict[border_coord]) * int(current_number)
+                                sum += gear_ratio
+                                #print(f'{current_number} borders a symbol')
+                                #print(f'Sum is now {sum}')
+                                break
+                            else:
+                                gear_dict[border_coord] = current_number
+                    # if no symbol found, reset current number   
+                    current_number = ''
+                    current_positions = []
+                    #print(f'Number reset: {current_number}')
+            # At end of row if there is a current number, check its borders
+            if len(current_number) > 0:
+                for border_coord in set([coord for sublist in current_positions for coord in sublist]):
+                        # check if coordinate is in our list of symbol coordinates
+                        if border_coord in gears:
+                            if border_coord in list(gear_dict.keys()):
+                                gear_ratio = int(gear_dict[border_coord]) * int(current_number)
+                                sum += gear_ratio
+                                #print(f'{current_number} borders a symbol')
+                                #print(f'Sum is now {sum}')
+                                break
+                            else:
+                                gear_dict[border_coord] = current_number
+                # After the symbol check, reset current number   
+                current_number = ''
+                current_positions = []
+        return sum
+    
+    return (find_gear_parts,)
+
+
+@app.cell
+def _():
+    test = {}
+    test['one'] = 1
+    test['two'] = 2
+    list(test.keys())
+    return (test,)
+
+
+@app.cell
+def _(find_gear_parts, sample):
+    find_gear_parts(sample)
+    return
+
+
+@app.cell
+def _(day03, find_gear_parts):
+    find_gear_parts(day03)
     return
 
 
