@@ -212,15 +212,6 @@ def _(mo):
 
 @app.cell
 def _():
-    cards = [1, 2, 3]
-    for card in cards:
-        print(card)
-        #cards.append(card)
-    return card, cards
-
-
-@app.cell
-def _():
     def matches_check(winning_numbers, lottery_numbers):
         #print(winning_numbers)
         matches = 0
@@ -241,12 +232,9 @@ def _(matches_check, sample_card, split_card):
 
 
 @app.cell
-def _():
-    return
-
-
-@app.cell
 def _(matches_check, sample, split_card):
+    # this function works for the sample, but has too long of a run time on the full set of cards
+
     def winning_copies(cards):
         # list of card copies won
         card_copies = []
@@ -255,13 +243,13 @@ def _(matches_check, sample, split_card):
         for card_idx, card in enumerate(cards):
             # find quantity of matches in card
             matches = matches_check(split_card(card)[1], split_card(card)[2])
-            print(f'Card {card_idx+1} has {matches} matches')
+            #print(f'Card {card_idx+1} has {matches} matches')
             # 
             for i in list(range(0, matches)):
                 card_copies.append(cards[card_idx+i+1])
                 #print(f'Copy of Card {card_idx+i+2} added for match {i+1}')
             #print('*'*10)
-        print(len(card_copies))
+        #print(len(card_copies))
         for card in card_copies:
             card_number, winning_numbers, lottery_numbers = split_card(card)
             matches = matches_check(winning_numbers, lottery_numbers)
@@ -269,7 +257,7 @@ def _(matches_check, sample, split_card):
                 card_copies.append(cards[int(card_number)+i])
         #print('*'*10)
         #print(card_copies)
-        print(len(cards) + len(card_copies))
+        #print(len(cards) + len(card_copies))
 
     winning_copies(sample)
     return (winning_copies,)
@@ -283,29 +271,79 @@ def _():
 
 @app.cell
 def _(matches_check, sample, split_card):
-    def winning_copies_samp(cards):
-        # list of card copies won
+    def simplify_cards(cards):
+        # list for simplified copies of card
         card_copies = []
         cards = cards.splitlines()
         # loop through each card, labeling with index
         for card_idx, card in enumerate(cards):
             # find quantity of matches in card
             matches = matches_check(split_card(card)[1], split_card(card)[2])
-            print(f'Card {card_idx+1} has {matches} matches')
-            # 
-            for i in list(range(0, matches)):
-                card_copies.append((card_idx, matches))
-                #print(f'Copy of Card {card_idx+i+2} added for match {i+1}')
-            #print('*'*10)
-        print(len(card_copies))
-        #for card in card_copies:
+            #print(f'Card {card_idx+1} has {matches} matches')
+            card_copies.append((card_idx+1, matches))
         
-        #print('*'*10)
-        #print(card_copies)
-        print(len(cards) + len(card_copies))
-        print(card_copies)
-    winning_copies_samp(sample)
-    return (winning_copies_samp,)
+        return card_copies
+
+    
+    simplify_cards(sample)
+    return (simplify_cards,)
+
+
+@app.cell
+def _():
+    samp_copies = [(1, 4), (1, 4), (1, 4), (1, 4), (2, 2), (2, 2), (3, 2), (3, 2), (4, 1)]
+    cards_simple = [(1, 4), (2, 2), (3, 2), (4, 1), (5, 0), (6, 0)]
+    samp_copies[0][0]
+    for copy in cards_simple:
+        if copy[1] > 0:
+        
+            print('True')
+    
+    return cards_simple, copy, samp_copies
+
+
+@app.cell
+def _(cards_simple):
+    quants = [1 for card in cards_simple]
+    print(quants)
+    for i, card in enumerate (cards_simple):
+        card_num = i+1
+        print(card_num)
+        for n in list(range(0, card[1])):
+            quants[card_num+n] += 1*(quants[i])
+            print(f'added 1 to card {card_num+n+1}')
+        print(quants)
+    print(quants)
+    print(sum(quants))
+    
+    return card, card_num, i, n, quants
+
+
+@app.cell
+def _(sample, simplify_cards):
+    def v2(cards):
+        # simply our cards into just the card number and total matches
+        cards_simple = simplify_cards(cards)
+        # create a list of the quantities of all cards, starting with 1 for each
+        quants = [1 for card in cards_simple]
+        # loop through each card
+        for card in cards_simple:
+            # the card number is 
+            card_num = card[0]
+            # change the quantity of the next cards depending on how many matches
+            for n in list(range(0, card[1])):
+                # change the quantity of this card and add that many copies
+                quants[card_num+n] += 1*(quants[card_num-1])
+        return sum(quants)
+
+    v2(sample)
+    return (v2,)
+
+
+@app.cell
+def _(day04, v2):
+    v2(day04)
+    return
 
 
 @app.cell
