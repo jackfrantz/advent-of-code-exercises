@@ -321,7 +321,7 @@ def _(cards_simple):
 
 @app.cell
 def _(sample, simplify_cards):
-    def v2(cards):
+    def total_winning_copies(cards):
         # simply our cards into just the card number and total matches
         cards_simple = simplify_cards(cards)
         # create a list of the quantities of all cards, starting with 1 for each
@@ -336,13 +336,13 @@ def _(sample, simplify_cards):
                 quants[card_num+n] += 1*(quants[card_num-1])
         return sum(quants)
 
-    v2(sample)
-    return (v2,)
+    total_winning_copies(sample)
+    return (total_winning_copies,)
 
 
 @app.cell
-def _(day04, v2):
-    v2(day04)
+def _(day04, total_winning_copies):
+    total_winning_copies(day04)
     return
 
 
