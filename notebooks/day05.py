@@ -309,10 +309,17 @@ def _(location_finder):
         # find seed ranges
         seed_numbers = [int(x) for x in almanac.split('\n\n')[0].split(':')[1].split()]
         seed_ranges = [(seed_numbers[i], seed_numbers[i+1]) for i in range(0, len(seed_numbers), 2)]
-        seeds = [seed for range_start, length in seed_ranges for seed in list(range(range_start, range_start+length))]
         # find locations of each seed in the range
-        for seed in seeds:
-            locations.append(location_finder(seed, almanac))
+        #for seed in [seed for range_start, length in seed_ranges for seed in list(range(range_start, range_start+length))]:
+            #locations.append(location_finder(seed, almanac))
+        for range_start, length in seed_ranges:
+            modifier = 0
+            while modifier < length:
+                location = location_finder(range_start+modifier, almanac)
+                if locations == [] or location < min(locations):
+                    locations.append(location)
+                modifier+=1
+    
         return min(locations)
     return (lowest_location_finder_seed_ranges,)
 
@@ -342,8 +349,146 @@ def _(lowest_location_finder_seed_ranges, sample):
 
 
 @app.cell
-def _(day05, lowest_location_finder_seed_ranges):
+def _():
     #lowest_location_finder_seed_ranges(day05)
+    return
+
+
+@app.cell
+def _():
+    # The following solution functions were written with the assistance of Anthropics claude-sonnet API
+
+    def find_mapped_ranges(input_ranges, mapping_rules):
+        # Add debug print
+        print(f"Processing ranges: {input_ranges}")
+        print(f"With rules: {mapping_rules}")
+    
+        if not mapping_rules:  # Handle case with no rules
+            return input_ranges
+        
+        # Sort mapping rules by source start for efficient processing
+        sorted_rules = sorted(mapping_rules, key=lambda x: x[1])
+        output_ranges = []
+    
+        # Process each input range
+        for start, length in input_ranges:
+            current = start
+            end = start + length
+            mapped = False
+        
+            # Check each mapping rule
+            for dest_start, src_start, rule_length in sorted_rules:
+                src_end = src_start + rule_length
+            
+                # If current range starts before mapping rule
+                if current < src_start:
+                    # Add unmapped portion
+                    if current < end:
+                        output_ranges.append((current, min(src_start - current, end - current)))
+                    current = src_start
+            
+                # If current position is within mapping rule
+                if current < src_end and current >= src_start and current < end:
+                    # Map the overlapping portion
+                    mapped_start = dest_start + (current - src_start)
+                    mapped_length = min(src_end, end) - current
+                    output_ranges.append((mapped_start, mapped_length))
+                    current = current + mapped_length
+                    mapped = True
+            
+                if current >= end:
+                    break
+                
+            # Add any remaining unmapped portion
+            if current < end and not mapped:
+                output_ranges.append((current, end - current))
+    
+        print(f"Output ranges: {output_ranges}")
+        return output_ranges
+    return (find_mapped_ranges,)
+
+
+@app.cell
+def _(find_mapped_ranges):
+    def improved_lowest_location_finder(almanac):
+        # Parse initial seed ranges
+        seed_numbers = [int(x) for x in almanac.split('\n\n')[0].split(':')[1].split()]
+        ranges = [(seed_numbers[i], seed_numbers[i+1]) for i in range(0, len(seed_numbers), 2)]
+    
+        print(f"Initial ranges: {ranges}")
+        current_ranges = ranges
+    
+        # Process each mapping section
+        for section in almanac.split('\n\n')[1:]:
+            print(f"\nProcessing section:\n{section}")
+            # Parse mapping rules
+            rules = []
+            for line in section.splitlines()[1:]:
+                numbers = [int(x) for x in line.split()]
+                dest_start, src_start, length = numbers
+                rules.append((dest_start, src_start, length))
+            
+            # Apply mapping rules to current ranges
+            current_ranges = find_mapped_ranges(current_ranges, rules)
+            print(f"After mapping: {current_ranges}")
+    
+        # Find minimum start value from final ranges
+        if not current_ranges:
+            return None
+        return min(start for start, _ in current_ranges)
+    return (improved_lowest_location_finder,)
+
+
+@app.cell
+def _(improved_lowest_location_finder, sample):
+    # Test with a smaller subset of the input first
+    test_result = improved_lowest_location_finder(sample)
+    print(f"\nTest result: {test_result}")
+    return (test_result,)
+
+
+@app.cell
+def _(improved_lowest_location_finder, sample):
+    # Test with sample first
+    print("Sample result:", improved_lowest_location_finder(sample))
+    return
+
+
+@app.cell
+def _(day05, improved_lowest_location_finder):
+    # Then with full input
+    print("Full input result:", improved_lowest_location_finder(day05))
+    return
+
+
+@app.cell
+def _():
+    initial_ranges = [(79, 14), (55, 13)]
+    seed_soil_map = [(50, 98, 2), (52, 50, 48)]
+    return initial_ranges, seed_soil_map
+
+
+@app.cell
+def _():
+    def range_processor(source_ranges, rules):
+        for range in source_ranges:
+            input_range_start, range_len = range
+            for rule in rules:
+                dest_range_start, source_range_start, rule_len = rule
+                print(input_range_start, range_len)
+                print(dest_range_start, source_range_start, rule_len)
+                if input_range_start > source_range_start:
+                    if (input_range_start+range_len-1) < (source_range_start+rule_len-1):
+                        output_range = (input_range_start+(dest_range_start-source_range_start), range_len)
+                        print(output_range)
+                    
+        return output_range
+    return (range_processor,)
+
+
+@app.cell
+def _(initial_ranges, range_processor, seed_soil_map):
+    range_processor(initial_ranges, seed_soil_map)
     return
 
 
