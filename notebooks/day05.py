@@ -114,8 +114,6 @@ def _(mo):
         So, the lowest location number in this example is 35.
 
         **What is the lowest location number that corresponds to any of the initial seed numbers?**
-
-
         """
     )
     return
@@ -180,8 +178,6 @@ def _():
                 print(f'{seed} in range')
                 soil = dest_range_start + (seed - source_range_start)
         return soil
-            
-
     return (seed_to_soil,)
 
 
@@ -204,7 +200,7 @@ def _():
                 # set destination value based on the map
                 destination = dest_range_start + (source - source_range_start)
                 break
-        return destination    
+        return destination
     return (map_converter,)
 
 
@@ -231,8 +227,6 @@ def _(map_converter, sample):
         print(f'Output is {seed}')
         print('*'*20)
     print(seed)
-        
-    
     return map, seed
 
 
@@ -304,6 +298,52 @@ def _(mo):
         Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. What is the lowest location number that corresponds to any of the initial seed numbers?
         """
     )
+    return
+
+
+@app.cell
+def _(location_finder):
+    def lowest_location_finder_seed_ranges(almanac):
+        # list to store locations
+        locations = []
+        # find seed ranges
+        seed_numbers = [int(x) for x in almanac.split('\n\n')[0].split(':')[1].split()]
+        seed_ranges = [(seed_numbers[i], seed_numbers[i+1]) for i in range(0, len(seed_numbers), 2)]
+        seeds = [seed for range_start, length in seed_ranges for seed in list(range(range_start, range_start+length))]
+        # find locations of each seed in the range
+        for seed in seeds:
+            locations.append(location_finder(seed, almanac))
+        return min(locations)
+    return (lowest_location_finder_seed_ranges,)
+
+
+@app.cell
+def _(sample):
+    nums = [int(x) for x in sample.split('\n\n')[0].split(':')[1].split()]
+    ranges = [(nums[i], nums[i+1]) for i in range(0, len(nums), 2)]
+    print(ranges)
+    #seeds = [seed for seed in list(range(range_start, range_start+length)) for range_start, length in ranges]
+    #seeds
+    for _range_start, _length in ranges:
+    #    print(range_start)
+    #    print(length)
+    #    print('*********')
+        _seed_range = list(range(_range_start, _range_start+_length))
+        print(_seed_range)
+
+    [z for x, y in ranges for z in list(range(x, x+y))]
+    return nums, ranges
+
+
+@app.cell
+def _(lowest_location_finder_seed_ranges, sample):
+    lowest_location_finder_seed_ranges(sample)
+    return
+
+
+@app.cell
+def _(day05, lowest_location_finder_seed_ranges):
+    #lowest_location_finder_seed_ranges(day05)
     return
 
 
