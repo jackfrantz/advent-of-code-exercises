@@ -71,37 +71,92 @@ def _():
 @app.cell
 def _(sample):
     sample.splitlines()
-    times = [int(x) for x in sample.splitlines()[0].split(':')[1].split()]
-    times
-    return (times,)
+    sample_times = [int(x) for x in sample.splitlines()[0].split(':')[1].split()]
+    print(f'Times: {sample_times}')
+    sample_records = [int(x) for x in sample.splitlines()[1].split(':')[1].split()]
+    print(f'Records: {sample_records}')
+    sample_races = list(zip(sample_times, sample_records))
+    print(f'Races: {sample_races}')
+    return sample_races, sample_records, sample_times
 
 
 @app.cell
-def _(sample):
-    records = [int(x) for x in sample.splitlines()[1].split(':')[1].split()]
-    records
-    return (records,)
-
-
-@app.cell
-def _(records, times):
-    races = list(zip(times, records))
-    races
-    return (races,)
-
-
-@app.cell
-def _(races):
-    sample_race = races[0]
-    for race in races:
+def _(sample_races):
+    sample_race = sample_races[0]
+    for race in sample_races:
+        losers = 0
         for time_held in range(0, race[0]+1):
-            #print(time_held)
-            race_time = race[0]-time_held
-            distance = race_time*time_held
-            if distance>race[1]:
-                print((time_held)*2)
-                break      
-    return distance, race, race_time, sample_race, time_held
+            print(time_held)
+            speed = time_held
+            travel_time = race[0]-time_held
+            print(travel_time)
+            distance_traveled = speed*travel_time
+            print(distance_traveled)
+            print('*'*20)
+            if distance_traveled <= race[1]:
+                losers += 1
+            else:
+                break
+        print(f'{(race[0]+1)-(losers*2)} winners')
+    return (
+        distance_traveled,
+        losers,
+        race,
+        sample_race,
+        speed,
+        time_held,
+        travel_time,
+    )
+
+
+@app.cell
+def _(sample_races):
+    def winning_races(race):
+        losers = 0
+        for time_held in range(0, race[0]+1):
+            speed = time_held
+            travel_time = race[0]-time_held
+            distance_traveled = speed*travel_time
+            if distance_traveled <= race[1]:
+                losers += 1
+            else:
+                break
+        return (race[0]+1)-(losers*2)
+
+    winning_races(sample_races[2])
+    return (winning_races,)
+
+
+@app.cell
+def _(sample, winning_races):
+    def mult_winners(races):
+        times = [int(x) for x in races.splitlines()[0].split(':')[1].split()]
+        records = [int(x) for x in races.splitlines()[1].split(':')[1].split()]
+        races = list(zip(times, records))
+        winners = 1
+        for race in races:
+            winners *= winning_races(race)
+        return winners
+
+    mult_winners(sample)
+    return (mult_winners,)
+
+
+app._unparsable_cell(
+    r"""
+    file_path = './data/day06.txt'
+        with open(file_path) as file:
+            day06 = file.read()
+        day06
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(day06, mult_winners):
+    mult_winners(day06)
+    return
 
 
 @app.cell
