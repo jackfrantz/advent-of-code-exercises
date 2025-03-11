@@ -7,7 +7,9 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    return (mo,)
+    import numpy as np
+    import matplotlib.pyplot as plt
+    return mo, np, plt
 
 
 @app.cell(hide_code=True)
@@ -119,6 +121,7 @@ def _(sample_races):
             distance_traveled = speed*travel_time
             if distance_traveled <= race[1]:
                 losers += 1
+                print((time_held, distance_traveled))
             else:
                 break
         return (race[0]+1)-(losers*2)
@@ -195,6 +198,141 @@ def _(sample):
 
     process_race(sample)
     return (process_race,)
+
+
+@app.cell
+def _(day06, process_race):
+    process_race(day06)
+    return
+
+
+@app.cell
+def _(np, process_race, sample):
+    def max_time_held(race):
+        h = race[0]/2
+        y = race[1]
+        k = h*h
+        #return (race[0]/2) + np.sqrt(((race[0])*(race[0]-(race[0]/2))-(race[1])))
+        return int(np.floor(h + np.sqrt(k-y)))
+
+    # round up
+    max_time_held(process_race(sample))
+    return (max_time_held,)
+
+
+@app.cell
+def _(np, process_race, sample):
+    def min_time_held(race):
+        h = race[0]/2
+        y = race[1]
+        k = h*h
+        #return (race[0]/2) - np.sqrt(((race[0])*(race[0]-(race[0]/2))-(race[1])))
+        return int(np.ceil(h - np.sqrt(k-y)))
+    
+    # round down
+    min_time_held(process_race(sample))
+    return (min_time_held,)
+
+
+@app.cell
+def _(max_time_held, min_time_held, process_race, sample):
+    def winning_races_v2(race_log):
+        race = process_race(race_log)
+        return max_time_held(race) - min_time_held(race) + 1
+        #return winning_races(race)
+
+    winning_races_v2(sample)
+    return (winning_races_v2,)
+
+
+@app.cell
+def _(day06, winning_races_v2):
+    # runtime too long
+    winning_races_v2(day06)
+    return
+
+
+@app.cell
+def _():
+    ## Solving Parabolas
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        """
+        $y = a(x - h)^2 + k$
+
+        $x$ = Time held
+
+        $h$ = ${RaceTime}\div{2}$
+
+        $k$ = $Max Distance$
+
+
+        """
+    )
+    return
+
+
+@app.cell
+def _(sample_race):
+    print(sample_race)
+
+    _x=2
+    _y=(-(_x-2)**2)+2
+    _y
+    return
+
+
+@app.cell
+def _(sample_race):
+    sample_race[0]/2
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""##Graph""")
+    return
+
+
+@app.cell
+def _(day06, np, plt, process_race):
+    # Parameters for y = a(x-h)^2 + k
+    a = 1    # controls width and direction (positive opens upward)
+    h = process_race(day06)[0]/2    # horizontal shift
+    k = ((process_race(day06)[0])/2)*((process_race(day06)[0])-((process_race(day06)[0])/2))   # vertical shift
+
+    # Create x values
+    x = np.linspace(-10, 45000000, 500)
+
+    # Create y values for shifted/scaled parabola
+    y = -a*(x - h)**2 + k
+
+    # Create the plot
+    plt.figure(figsize=(8, 6))
+    plt.plot(x, y)
+    plt.grid(True)
+
+    # Add labels and title
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(f'Parabola: y = {a}(x - {h})² + {k}')
+
+    # Add the x and y axis lines
+    plt.axhline(y=0, color='k', linestyle='-', alpha=0.3)
+    plt.axvline(x=0, color='k', linestyle='-', alpha=0.3)
+    plt.axhline(y=process_race(day06)[1], color='r', linestyle='--', label='y = 5')
+
+    plt.gca()
+    return a, h, k, x, y
 
 
 @app.cell
