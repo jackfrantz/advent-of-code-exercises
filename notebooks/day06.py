@@ -181,6 +181,23 @@ def _(mo):
 
 
 @app.cell
+def _(sample):
+    sample.splitlines()[0].split(':')[1]
+    return
+
+
+@app.cell
+def _(sample):
+    def process_race(race_log):
+        time = int(race_log.splitlines()[0].split(':')[1].replace(' ', ''))
+        record = int(race_log.splitlines()[1].split(':')[1].replace(' ', ''))
+        return (time, record)
+
+    process_race(sample)
+    return (process_race,)
+
+
+@app.cell
 def _():
     return
 
