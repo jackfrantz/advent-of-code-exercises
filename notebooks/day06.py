@@ -142,20 +142,41 @@ def _(sample, winning_races):
     return (mult_winners,)
 
 
-app._unparsable_cell(
-    r"""
+@app.cell
+def _():
     file_path = './data/day06.txt'
-        with open(file_path) as file:
-            day06 = file.read()
-        day06
-    """,
-    name="_"
-)
+    with open(file_path) as file:
+        day06 = file.read()
+    day06
+    return day06, file, file_path
 
 
 @app.cell
 def _(day06, mult_winners):
     mult_winners(day06)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        #Part Two
+        As the race is about to start, you realize the piece of paper with race times and record distances you got earlier actually just has very bad kerning. There's really only one race - ignore the spaces between the numbers on each line.
+
+        So, the example from before:
+
+        Time:      7  15   30
+        Distance:  9  40  200
+        ...now instead means this:
+
+        Time:      71530
+        Distance:  940200
+        Now, you have to figure out how many ways there are to win this single race. In this example, the race lasts for 71530 milliseconds and the record distance you need to beat is 940200 millimeters. You could hold the button anywhere from 14 to 71516 milliseconds and beat the record, a total of 71503 ways!
+
+        How many ways can you beat the record in this one much longer race?
+        """
+    )
     return
 
 
