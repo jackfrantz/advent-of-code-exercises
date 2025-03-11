@@ -11,3 +11,9 @@ wheels/
 
 # Ignore marimo configuration with sensitive data
 marimo.toml
+
+# macOS system files
+.DS_Store
+
+# Python version management
+.python-version
