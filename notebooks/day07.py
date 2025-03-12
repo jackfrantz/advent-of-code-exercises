@@ -110,13 +110,9 @@ def _(sample):
 
 
 @app.cell
-def _():
+def _(cards_list):
     from collections import Counter
-    return (Counter,)
 
-
-@app.cell
-def _(Counter, cards_list):
     def score(cards):
         chars = Counter(cards).most_common()
         if chars[0][1] == 5:
@@ -139,7 +135,7 @@ def _(Counter, cards_list):
 
     counts = score(cards_list[0])
     counts
-    return counts, score
+    return Counter, counts, score
 
 
 @app.cell
@@ -147,6 +143,52 @@ def _(cards_list, score):
     for cards in cards_list:
         score(cards)
     return (cards,)
+
+
+@app.cell
+def _():
+    # Psuedocode
+    #def solver_function(file):
+        # sort all hands in file
+        # score each hand and put it into lists by score
+        # concat all lists together in order
+        # enumerate from lowest to highest score and multiply wager by index
+    return
+
+
+@app.cell
+def _():
+    def hand_sorter(hands):
+        card_values = {card: value for value, card in enumerate('AKQJT98765432'[::-1])}
+
+        # Key function to map each card to a value for sorting
+        def key_function(hand):
+            return [card_values[card] for card in hand]
+
+        # Return sorted cards using key
+        return sorted(hands, key=key_function)
+    
+    return (hand_sorter,)
+
+
+@app.cell
+def _(cards_list, hand_sorter):
+    hand_sorter(cards_list)
+    return
+
+
+@app.cell
+def _():
+    card_values = {card: value for value, card in enumerate('AKQJT98765432'[::-1])}
+    card_values
+    return (card_values,)
+
+
+@app.cell
+def _(card_values, sample):
+    _hand = sample.splitlines()[0].split(' ')[0]
+    [card_values[card] for card in _hand]
+    return
 
 
 @app.cell
