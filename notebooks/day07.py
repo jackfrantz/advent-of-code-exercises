@@ -75,8 +75,6 @@ def _(mo):
         Now, you can determine the total winnings of this set of hands by adding up the result of multiplying each hand's bid with its rank (765 * 1 + 220 * 2 + 28 * 3 + 684 * 4 + 483 * 5). So the total winnings in this example are 6440.
 
         **Find the rank of every hand in your set. What are the total winnings?**
-
-
         """
     )
     return
@@ -110,76 +108,106 @@ def _(sample):
 
 
 @app.cell
-def _(cards_list):
+def _(five, four, full_house, high, one_pair, three, two_pair):
     from collections import Counter
 
-    def score(cards):
-        chars = Counter(cards).most_common()
+    def score(hand):
+        chars = Counter(hand.split(' ')[0]).most_common()
         if chars[0][1] == 5:
-            print(f'{cards}: 5 of a Kind')
+            #print(f'{cards}: 5 of a Kind')
+            return five
         elif chars[0][1] == 4:
-            print(f'{cards}: 4 of a Kind')
+            #print(f'{cards}: 4 of a Kind')
+            return four
         elif chars[0][1] == 3 and chars[1][1] == 2:
-            print(f'{cards}: Full House')
+            #print(f'{cards}: Full House')
+            return full_house
         elif chars[0][1] == 3:
-            print(f'{cards}: 3 of a Kind')
+            #print(f'{cards}: 3 of a Kind')
+            return three
         elif chars[0][1] == 2 and chars[1][1] == 2:
-            print(f'{cards}: Two Pair')
+            #print(f'{cards}: Two Pair')
+            return two_pair
         elif chars[0][1] == 2:
-            print(f'{cards}: One Pair')
+            #print(f'{cards}: One Pair')
+            return one_pair
         else:
-            print(f'{cards}: High Card')
-    
-        
-        return chars
-
-    counts = score(cards_list[0])
-    counts
-    return Counter, counts, score
+            #print(f'{cards}: High Card')
+            return high
 
 
-@app.cell
-def _(cards_list, score):
-    for cards in cards_list:
-        score(cards)
-    return (cards,)
+    return Counter, score
 
 
 @app.cell
 def _():
+    #for _cards in cards_list:
+        #score(_cards)
+    return
+
+
+@app.cell
+def _(Counter, hand_sorter):
     # Psuedocode
-    #def solver_function(file):
+    def solver_function(hands):
         # sort all hands in file
+        hands_sorted = hand_sorter(hands.splitlines())
         # score each hand and put it into lists by score
-        # concat all lists together in order
-        # enumerate from lowest to highest score and multiply wager by index
-    return
-
-
-@app.cell
-def _():
-    def hand_sorter(hands):
-        card_values = {card: value for value, card in enumerate('AKQJT98765432'[::-1])}
-
-        # Key function to map each card to a value for sorting
-        def key_function(hand):
-            return [card_values[card] for card in hand]
-
-        # Return sorted cards using key
-        return sorted(hands, key=key_function)
+        high = []
+        one_pair = []
+        two_pair = []
+        three = []
+        full_house = []
+        four = []
+        five = []
     
-    return (hand_sorter,)
+        def score(hand):
+            chars = Counter(hand.split(' ')[0]).most_common()
+            if chars[0][1] == 5:
+                #print(f'{cards}: 5 of a Kind')
+                return five
+            elif chars[0][1] == 4:
+                #print(f'{cards}: 4 of a Kind')
+                return four
+            elif chars[0][1] == 3 and chars[1][1] == 2:
+                #print(f'{cards}: Full House')
+                return full_house
+            elif chars[0][1] == 3:
+                #print(f'{cards}: 3 of a Kind')
+                return three
+            elif chars[0][1] == 2 and chars[1][1] == 2:
+                #print(f'{cards}: Two Pair')
+                return two_pair
+            elif chars[0][1] == 2:
+                #print(f'{cards}: One Pair')
+                return one_pair
+            else:
+                #print(f'{cards}: High Card')
+                return high
+        for hand in hands_sorted:
+            score(hand).append(hand)
+        
+        # concat all lists together in order
+        all_hands_sorted = high + one_pair + two_pair + three + full_house + four + five
+        score = 0
+        for i, hand in enumerate(all_hands_sorted):
+            score += (i+1)*int(hand.split(' ')[1])
+        return score
+        
+
+        # enumerate from lowest to highest score and multiply wager by index
+    return (solver_function,)
 
 
 @app.cell
-def _(cards_list, hand_sorter):
-    hand_sorter(cards_list)
+def _(sample, solver_function):
+    solver_function(sample)
     return
 
 
 @app.cell
 def _():
-    card_values = {card: value for value, card in enumerate('AKQJT98765432'[::-1])}
+    card_values = {card: value for value, card in enumerate('AKQJT9876543210 '[::-1])}
     card_values
     return (card_values,)
 
@@ -187,8 +215,35 @@ def _():
 @app.cell
 def _(card_values, sample):
     _hand = sample.splitlines()[0].split(' ')[0]
+    print(_hand)
     [card_values[card] for card in _hand]
     return
+
+
+@app.cell
+def _(sample):
+    def hand_sorter(hands):
+        card_values = {card: value for value, card in enumerate('AKQJT9876543210 '[::-1])}
+
+        # Key function to map each card to a value for sorting
+        def key_function(hand):
+            return [card_values[card] for card in hand]
+
+        # Return sorted cards using key
+        return sorted(hands, key=key_function)
+
+    hand_sorter(sample.splitlines())
+    return (hand_sorter,)
+
+
+@app.cell
+def _():
+    test_list = ['1']
+    def functional(thing):
+        if thing == 1:
+            return test_list.append(thing)
+    functional(1)
+    return functional, test_list
 
 
 @app.cell
