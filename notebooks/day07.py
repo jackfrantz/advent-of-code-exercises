@@ -134,8 +134,6 @@ def _(five, four, full_house, high, one_pair, three, two_pair):
         else:
             #print(f'{cards}: High Card')
             return high
-
-
     return Counter, score
 
 
@@ -160,7 +158,7 @@ def _(Counter, hand_sorter):
         full_house = []
         four = []
         five = []
-    
+
         def score(hand):
             chars = Counter(hand.split(' ')[0]).most_common()
             if chars[0][1] == 5:
@@ -186,14 +184,14 @@ def _(Counter, hand_sorter):
                 return high
         for hand in hands_sorted:
             score(hand).append(hand)
-        
+
         # concat all lists together in order
         all_hands_sorted = high + one_pair + two_pair + three + full_house + four + five
         score = 0
         for i, hand in enumerate(all_hands_sorted):
             score += (i+1)*int(hand.split(' ')[1])
         return score
-        
+
 
         # enumerate from lowest to highest score and multiply wager by index
     return (sum_winning_wagers,)
@@ -238,6 +236,14 @@ def _(sample):
 
 @app.cell
 def _():
+    file_path = './data/day07.txt'
+    with open(file_path) as file:
+        day07 = file.read()
+    return day07, file, file_path
+
+
+@app.cell
+def _():
     test_list = ['1']
     def functional(thing):
         if thing == 1:
@@ -248,16 +254,198 @@ def _():
 
 @app.cell
 def _():
-    file_path = './data/day07.txt'
-    with open(file_path) as file:
-        day07 = file.read()
-    return day07, file, file_path
+    day07_test = open('./data/day07.txt').read()
+    day07_test
+    return (day07_test,)
 
 
 @app.cell
 def _(day07, sum_winning_wagers):
     sum_winning_wagers(day07)
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        #Part Two
+        To make things a little more interesting, the Elf introduces one additional rule. Now, J cards are jokers - wildcards that can act like whatever card would make the hand the strongest type possible.
+
+        To balance this, J cards are now the weakest individual cards, weaker even than 2. The other cards stay in the same order: `A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J.`
+
+        J cards can pretend to be whatever card is best for the purpose of determining hand type; for example, `QJJQ2` is now considered four of a kind. However, for the purpose of breaking ties between two hands of the same type, J is always treated as J, not the card it's pretending to be: `JKKK2` is weaker than `QQQQ2` because J is weaker than Q.
+
+        Now, the above example goes very differently:
+        ```
+        32T3K 765
+        T55J5 684
+        KK677 28
+        KTJJT 220
+        QQQJA 483
+        ```
+        32T3K is still the only one pair; it doesn't contain any jokers, so its strength doesn't increase.
+        KK677 is now the only two pair, making it the second-weakest hand.
+        T55J5, KTJJT, and QQQJA are now all four of a kind! T55J5 gets rank 3, QQQJA gets rank 4, and KTJJT gets rank 5.
+        With the new joker rule, the total winnings in this example are 5905.
+
+        Using the new joker rule, find the rank of every hand in your set. **What are the new total winnings?**
+
+
+        """
+    )
+    return
+
+
+@app.cell
+def _(sample):
+    def j_hand_sorter(hands):
+        card_values = {card: value for value, card in enumerate('AKQT98765432J10 '[::-1])}
+
+        # Key function to map each card to a value for sorting
+        def key_function(hand):
+            return [card_values[card] for card in hand]
+
+        # Return sorted cards using key
+        return sorted(hands, key=key_function)
+
+    j_hand_sorter(sample.splitlines())
+    return (j_hand_sorter,)
+
+
+@app.cell
+def _(Counter, j_checker, j_hand_sorter):
+    # Psuedocode
+    def joker_sum_winning_wagers(hands):
+        # can still sort all hands in file
+        hands_sorted = j_hand_sorter(hands.splitlines())
+        # still need to put each hand in a list by score
+        high = []
+        one_pair = []
+        two_pair = []
+        three = []
+        full_house = []
+        four = []
+        five = []
+
+        def score(hand):
+            # get the cards from hand
+            cards = hand.split(' ')[0]
+            best_hand = j_checker(cards)
+            chars = Counter(best_hand).most_common()
+            if chars[0][1] == 5:
+                #print(f'{cards}: 5 of a Kind')
+                return five
+            elif chars[0][1] == 4:
+                #print(f'{cards}: 4 of a Kind')
+                return four
+            elif chars[0][1] == 3 and chars[1][1] == 2:
+                #print(f'{cards}: Full House')
+                return full_house
+            elif chars[0][1] == 3:
+                #print(f'{cards}: 3 of a Kind')
+                return three
+            elif chars[0][1] == 2 and chars[1][1] == 2:
+                #print(f'{cards}: Two Pair')
+                return two_pair
+            elif chars[0][1] == 2:
+                #print(f'{cards}: One Pair')
+                return one_pair
+            else:
+                #print(f'{cards}: High Card')
+                return high
+
+        for hand in hands_sorted:
+            score(hand).append(hand)
+
+        # concat all lists together in order
+        all_hands_sorted = high + one_pair + two_pair + three + full_house + four + five
+        score = 0
+        for i, hand in enumerate(all_hands_sorted):
+            score += (i+1)*int(hand.split(' ')[1])
+        return score
+
+
+        # enumerate from lowest to highest score and multiply wager by index
+    return (joker_sum_winning_wagers,)
+
+
+@app.cell
+def _(joker_sum_winning_wagers, sample):
+    joker_sum_winning_wagers(sample)
+    return
+
+
+@app.cell
+def _(day07, joker_sum_winning_wagers):
+    joker_sum_winning_wagers(day07)
+    return
+
+
+@app.cell
+def _():
+    # we only need to convert the card before we score the card, everything else can remain
+    return
+
+
+@app.cell
+def _(sample):
+    print((sample.splitlines()[1]).split(' ')[0])
+    return
+
+
+@app.cell
+def _(Counter, sample):
+    sample_count = Counter((sample.splitlines()[1]).split(' ')[0]).most_common()
+    sample_count[0][0]
+    return (sample_count,)
+
+
+@app.cell
+def _():
+    #max(sample_count.values())
+    return
+
+
+@app.cell
+def _(sample_count):
+    'J' in sample_count
+    return
+
+
+@app.cell
+def _(sample_count):
+    test_string = '32T3K'
+    test_jstring = 'T55J5'
+    test_string.replace('J', sample_count[0][0])
+    test_jstring.replace('J', sample_count[0][0])
+    return test_jstring, test_string
+
+
+@app.cell
+def _(Counter):
+    def jscore(_hand):
+        _chars = Counter(_hand.split(' ')[0]).most_common()
+        _best_hand = _hand.split(' ')[0].replace('J', _chars[0][0])
+        _chars = Counter(_best_hand).most_common()
+        return _chars
+
+    jscore('7227J')[0]
+    return (jscore,)
+
+
+@app.cell
+def _(Counter):
+    def j_checker(cards):
+        if 'J' in cards and cards != 'JJJJJ':
+            # get most common non-J cards
+            char_count = Counter(cards.replace('J', '')).most_common()
+            # our best hand is the cards with the most common non-J char replacing J
+            best_hand = cards.replace('J', char_count[0][0])
+        else:
+            best_hand = cards
+        return best_hand
+    return (j_checker,)
 
 
 @app.cell
