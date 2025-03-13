@@ -149,7 +149,7 @@ def _():
 @app.cell
 def _(Counter, hand_sorter):
     # Psuedocode
-    def solver_function(hands):
+    def sum_winning_wagers(hands):
         # sort all hands in file
         hands_sorted = hand_sorter(hands.splitlines())
         # score each hand and put it into lists by score
@@ -196,12 +196,12 @@ def _(Counter, hand_sorter):
         
 
         # enumerate from lowest to highest score and multiply wager by index
-    return (solver_function,)
+    return (sum_winning_wagers,)
 
 
 @app.cell
-def _(sample, solver_function):
-    solver_function(sample)
+def _(sample, sum_winning_wagers):
+    sum_winning_wagers(sample)
     return
 
 
@@ -244,6 +244,20 @@ def _():
             return test_list.append(thing)
     functional(1)
     return functional, test_list
+
+
+@app.cell
+def _():
+    file_path = './data/day07.txt'
+    with open(file_path) as file:
+        day07 = file.read()
+    return day07, file, file_path
+
+
+@app.cell
+def _(day07, sum_winning_wagers):
+    sum_winning_wagers(day07)
+    return
 
 
 @app.cell
