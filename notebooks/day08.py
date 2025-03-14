@@ -55,8 +55,146 @@ def _(mo):
 
 
 @app.cell
+def _():
+    sample = '''RL
+
+    AAA = (BBB, CCC)
+    BBB = (DDD, EEE)
+    CCC = (ZZZ, GGG)
+    DDD = (DDD, DDD)
+    EEE = (EEE, EEE)
+    GGG = (GGG, GGG)
+    ZZZ = (ZZZ, ZZZ)'''
+
+    print(sample)
+    return (sample,)
+
+
+@app.cell
+def _(sample):
+    _start = 'AAA'
+    map_start = sample.find(f'{_start} = ')
+    map_start
+    return (map_start,)
+
+
+@app.cell
+def _(map_start, sample):
+    # start of coord in sample
+    print(sample[10])
+    # end of coord in sample
+    print(sample[19])
+    # full coord
+    print(sample[10:20])
+
+    # finding the strings for the left and right
+    print(f'Left is {sample[11:14]}')
+    print(f'Right is {sample[16:19]}')
+
+    # finding the string with start point from .find() function
+    print(f'Left is {sample[(map_start+7):(map_start+10)]}')
+    print(f'Right is {sample[(map_start+12):(map_start+15)]}')
+    return
+
+
+@app.cell
+def _(sample):
+    def get_instructions(map):
+        intstructions = map.splitlines()[0]
+        return intstructions
+
+    print(get_instructions(sample))
+    return (get_instructions,)
+
+
+@app.cell
+def _(sample):
+    def next_node(map, start, side):
+        node_loc = map.find(f'{start} = ')
+        if side == 'L':
+            return map[(node_loc+7):(node_loc+10)]
+        elif side == 'R':
+            return map[(node_loc+12):(node_loc+15)]
+
+    print(next_node(sample, 'AAA', 'L'))
+    return (next_node,)
+
+
+@app.cell
+def _(get_instructions, next_node, sample):
+    def follow_map_steps(map):
+        start = 'AAA'
+        steps = 0
+        while start != 'ZZZ':
+            for instruction in get_instructions(map):
+                steps += 1
+                print(f'Starting at: {start}')
+                start = next_node(map, start, instruction)
+                print(f' Next Start: {start}')
+                if start == 'ZZZ':
+                    print('Done!')
+                    break
+        print(steps)
+
+    follow_map_steps(sample)
+    return (follow_map_steps,)
+
+
+@app.cell
+def _():
+    day08 = open('./data/day08.txt').read()
+    day08
+    return (day08,)
+
+
+@app.cell
+def _(day08, follow_map_steps):
+    follow_map_steps(day08)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
 def _(mo):
-    mo.md(r""" """)
+    mo.md(
+        r"""
+        #Part Two
+        The sandstorm is upon you and you aren't any closer to escaping the wasteland. You had the camel follow the instructions, but you've barely left your starting position. It's going to take significantly more steps to escape!
+
+        What if the map isn't for people - what if the map is for ghosts? Are ghosts even bound by the laws of spacetime? Only one way to find out.
+
+        After examining the maps a bit longer, your attention is drawn to a curious fact: the number of nodes with names ending in A is equal to the number ending in Z! If you were a ghost, you'd probably just start at every node that ends with A and follow all of the paths at the same time until they all simultaneously end up at nodes that end with Z.
+
+        For example:
+
+        LR
+
+        11A = (11B, XXX)
+        11B = (XXX, 11Z)
+        11Z = (11B, XXX)
+        22A = (22B, XXX)
+        22B = (22C, 22C)
+        22C = (22Z, 22Z)
+        22Z = (22B, 22B)
+        XXX = (XXX, XXX)
+        Here, there are two starting nodes, 11A and 22A (because they both end with A). As you follow each left/right instruction, use that instruction to simultaneously navigate away from both nodes you're currently on. Repeat this process until all of the nodes you're currently on end with Z. (If only some of the nodes you're on end with Z, they act like any other node and you continue as normal.) In this example, you would proceed as follows:
+
+        Step 0: You are at 11A and 22A.
+        Step 1: You choose all of the left paths, leading you to 11B and 22B.
+        Step 2: You choose all of the right paths, leading you to 11Z and 22C.
+        Step 3: You choose all of the left paths, leading you to 11B and 22Z.
+        Step 4: You choose all of the right paths, leading you to 11Z and 22B.
+        Step 5: You choose all of the left paths, leading you to 11B and 22C.
+        Step 6: You choose all of the right paths, leading you to 11Z and 22Z.
+        So, in this example, you end up entirely on nodes that end in Z after 6 steps.
+
+        Simultaneously start on every node that ends with A. How many steps does it take before you're only on nodes that end with Z?
+        """
+    )
     return
 
 
