@@ -7,7 +7,8 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    return (mo,)
+    import re
+    return mo, re
 
 
 @app.cell(hide_code=True)
@@ -153,12 +154,7 @@ def _(day08, follow_map_steps):
     return
 
 
-@app.cell
-def _():
-    return
-
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -171,6 +167,7 @@ def _(mo):
 
         For example:
 
+        ```
         LR
 
         11A = (11B, XXX)
@@ -181,6 +178,8 @@ def _(mo):
         22C = (22Z, 22Z)
         22Z = (22B, 22B)
         XXX = (XXX, XXX)
+        ```
+
         Here, there are two starting nodes, 11A and 22A (because they both end with A). As you follow each left/right instruction, use that instruction to simultaneously navigate away from both nodes you're currently on. Repeat this process until all of the nodes you're currently on end with Z. (If only some of the nodes you're on end with Z, they act like any other node and you continue as normal.) In this example, you would proceed as follows:
 
         Step 0: You are at 11A and 22A.
@@ -195,6 +194,84 @@ def _(mo):
         Simultaneously start on every node that ends with A. How many steps does it take before you're only on nodes that end with Z?
         """
     )
+    return
+
+
+@app.cell
+def _():
+    ghost_sample = '''LR
+
+    11A = (11B, XXX)
+    11B = (XXX, 11Z)
+    11Z = (11B, XXX)
+    22A = (22B, XXX)
+    22B = (22C, 22C)
+    22C = (22Z, 22Z)
+    22Z = (22B, 22B)
+    XXX = (XXX, XXX)'''
+    return (ghost_sample,)
+
+
+@app.cell
+def _(day08, ghost_sample, re):
+    def find_starting_points(map):
+        # find all points where the node ends in A
+        pattern = r'\w+A = '
+        matches = [x[:3] for x in re.findall(pattern, map)]
+        return matches
+
+    print(find_starting_points(day08))
+    print(find_starting_points(ghost_sample))
+    return (find_starting_points,)
+
+
+@app.cell
+def _(day08, re):
+    re.findall(r'\w+A = ', day08)
+    return
+
+
+@app.cell
+def _():
+    'HVA = '[2]
+    return
+
+
+@app.cell
+def _(find_starting_points, get_instructions, ghost_sample, next_node):
+    #starting_points = find_starting_points(map)
+    #for i, node in enumerate(starting_points):
+    #    starting_points[i] = next_node()
+
+
+    def follow_ghost_steps(map):
+        starting_points = find_starting_points(map)
+        last_letters = [x[2] for x in starting_points]
+        #print(last_letters)
+        steps = 0
+        while len(set(last_letters)) != 1 or last_letters[0] != 'Z':
+            for instruction in get_instructions(map):
+                #print(instruction)
+                steps += 1
+                #print(f'Starting at: {starting_points}')
+                for i, node in enumerate(starting_points):
+                    starting_points[i] = next_node(map, node, instruction)
+                    #print(starting_points)
+                    last_letters[i] = starting_points[i][2]
+                    #print(last_letters)
+                #print(f' Next Start: {starting_points}')
+                if len(set(last_letters)) == 1 and last_letters[0] == 'Z':
+                    #print('Done!')
+                    break
+        print(steps)
+
+    follow_ghost_steps(ghost_sample)
+    return (follow_ghost_steps,)
+
+
+@app.cell
+def _(day08, follow_ghost_steps):
+    follow_ghost_steps(day08)
     return
 
 
