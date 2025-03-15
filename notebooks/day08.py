@@ -8,7 +8,8 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     import re
-    return mo, re
+    import math
+    return math, mo, re
 
 
 @app.cell(hide_code=True)
@@ -48,8 +49,6 @@ def _(mo):
         ZZZ = (ZZZ, ZZZ)
         ```
         Starting at `AAA`, follow the left/right instructions. **How many steps are required to reach `ZZZ`?**
-
-
         """
     )
     return
@@ -249,8 +248,9 @@ def _(find_starting_points, get_instructions, ghost_sample, next_node):
         last_letters = [x[2] for x in starting_points]
         #print(last_letters)
         steps = 0
-        while len(set(last_letters)) != 1 or last_letters[0] != 'Z':
-            for instruction in get_instructions(map):
+        instructions = get_instructions(map)
+        while set(last_letters) != {'Z'}:
+            for instruction in instructions:
                 #print(instruction)
                 steps += 1
                 #print(f'Starting at: {starting_points}')
@@ -260,7 +260,7 @@ def _(find_starting_points, get_instructions, ghost_sample, next_node):
                     last_letters[i] = starting_points[i][2]
                     #print(last_letters)
                 #print(f' Next Start: {starting_points}')
-                if len(set(last_letters)) == 1 and last_letters[0] == 'Z':
+                if set(last_letters) == {'Z'}:
                     #print('Done!')
                     break
         print(steps)
@@ -270,8 +270,45 @@ def _(find_starting_points, get_instructions, ghost_sample, next_node):
 
 
 @app.cell
-def _(day08, follow_ghost_steps):
-    follow_ghost_steps(day08)
+def _():
+    # Runtime to long
+    #follow_ghost_steps(day08)
+    return
+
+
+@app.cell
+def _(find_starting_points, get_instructions, ghost_sample, math, next_node):
+    def follow_ghost_steps_v2(map):
+        starting_points = find_starting_points(map)
+        last_letters = [x[2] for x in starting_points]
+        fewest_steps = []
+        #print(last_letters)
+        instructions = get_instructions(map)
+        for starting_point in starting_points:
+            steps = 0
+            while starting_point[-1] != 'Z':
+                for instruction in instructions:
+                    #print(instruction)
+                    steps += 1
+                    #print(f'Starting at: {starting_points}')
+                    starting_point = next_node(map, starting_point, instruction)
+                    #print(starting_points)
+                    #print(last_letters)
+                    #print(f' Next Start: {starting_points}')
+                    if starting_point[-1] == 'Z':
+                        #print('Done!')
+                        fewest_steps.append(steps)
+                        break
+        print(fewest_steps)
+        return math.lcm(*fewest_steps)
+
+    follow_ghost_steps_v2(ghost_sample)
+    return (follow_ghost_steps_v2,)
+
+
+@app.cell
+def _(day08, follow_ghost_steps_v2):
+    follow_ghost_steps_v2(day08)
     return
 
 
