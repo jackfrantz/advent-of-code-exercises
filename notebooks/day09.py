@@ -112,12 +112,155 @@ def _(sample):
 
 @app.cell
 def _(sample_hist):
-    _last_numbers = []
+    _last_numbers = [sample_hist[-1]]
     _predictions = sample_hist
     while set(_predictions) != {0}:
         print(_predictions)
         _predictions = [(_predictions[i+1]-_predictions[i]) for i in range(len(_predictions)-1)]
         _last_numbers.append(_predictions[-1])
+    print(_last_numbers)
+    print(sum(_last_numbers))
+    return
+
+
+@app.cell
+def _(sample_hist):
+    def extrapolate_history(history):
+        last_numbers = [history[-1]]
+        predictions = history
+        while set(predictions) != {0}:
+            #print(predictions)
+            predictions = [(predictions[i+1]-predictions[i]) for i in range(len(predictions)-1)]
+            last_numbers.append(predictions[-1])
+        #print(last_numbers)
+        #print(sum(last_numbers))
+        return sum(last_numbers)
+
+    extrapolate_history(sample_hist)
+    return (extrapolate_history,)
+
+
+@app.cell
+def _(extrapolate_history, sample):
+    extrapolate_history([int(x) for x in sample.splitlines()[1].split()])
+    return
+
+
+@app.cell
+def _(extrapolate_history, sample):
+    extrapolate_history([int(x) for x in sample.splitlines()[2].split()])
+    return
+
+
+@app.cell
+def _(extrapolate_history, sample):
+    def sum_extra_values(history):
+        sum = 0
+        for history in history.splitlines():
+            sum += extrapolate_history([int(x) for x in history.split()])
+        return sum
+
+    sum_extra_values(sample)
+    return (sum_extra_values,)
+
+
+@app.cell
+def _():
+    day09 = open('./data/day09.txt').read()
+    return (day09,)
+
+
+@app.cell
+def _(day09, sum_extra_values):
+    sum_extra_values(day09)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        #Part Two
+        Of course, it would be nice to have even more history included in your report. Surely it's safe to just extrapolate backwards as well, right?
+
+        For each history, repeat the process of finding differences until the sequence of differences is entirely zero. Then, rather than adding a zero to the end and filling in the next values of each previous sequence, you should instead add a zero to the beginning of your sequence of zeroes, then fill in new first values for each previous sequence.
+
+        In particular, here is what the third example history looks like when extrapolating back in time:
+        ```
+        5  10  13  16  21  30  45
+          5   3   3   5   9  15
+           -2   0   2   4   6
+              2   2   2   2
+                0   0   0
+        ```
+        Adding the new values on the left side of each sequence from bottom to top eventually reveals the new left-most history value: 5.
+
+        Doing this for the remaining example data above results in previous values of -3 for the first history and 0 for the second history. Adding all three new values together produces 2.
+
+        Analyze your OASIS report again, this time extrapolating the previous value for each history. What is the sum of these extrapolated values?
+        """
+    )
+    return
+
+
+@app.cell
+def _(sample):
+    sample_hist_3 = [int(x) for x in sample.splitlines()[2].split()]
+    return (sample_hist_3,)
+
+
+@app.cell
+def _(sample):
+    sample_hist_2 = [int(x) for x in sample.splitlines()[1].split()]
+    return (sample_hist_2,)
+
+
+@app.cell
+def _(sample_hist_3):
+    def previous_history(history):
+        first_numbers = [history[0]]
+        predictions = history
+        while set(predictions) != {0}:
+            #print(predictions)
+            predictions = [(predictions[i+1]-predictions[i]) for i in range(len(predictions)-1)]
+            first_numbers.append(predictions[0])
+        #print(first_numbers)
+        prev_prediction = 0
+        first_numbers.reverse()
+        #print(first_numbers)
+        for i in range(len(first_numbers)-1):
+            prev_prediction = first_numbers[i+1] - prev_prediction
+            #print(prev_prediction)
+        return prev_prediction
+
+    previous_history(sample_hist_3)
+    return (previous_history,)
+
+
+@app.cell
+def _():
+    first_numbers = [1, 2, 1, 0]
+    range(len(first_numbers))
+    first_numbers.reverse()
+    first_numbers
+    return (first_numbers,)
+
+
+@app.cell
+def _(previous_history, sample):
+    def sum_prev_values(history):
+        sum = 0
+        for history in history.splitlines():
+            sum += previous_history([int(x) for x in history.split()])
+        return sum
+
+    sum_prev_values(sample)
+    return (sum_prev_values,)
+
+
+@app.cell
+def _(day09, sum_prev_values):
+    sum_prev_values(day09)
     return
 
 
