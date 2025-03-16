@@ -105,9 +105,20 @@ def _():
 
 @app.cell
 def _(sample):
-    sample_hist  = sample.splitlines()[0].split()
+    sample_hist  = [int(x) for x in sample.splitlines()[0].split()]
     sample_hist
     return (sample_hist,)
+
+
+@app.cell
+def _(sample_hist):
+    _last_numbers = []
+    _predictions = sample_hist
+    while set(_predictions) != {0}:
+        print(_predictions)
+        _predictions = [(_predictions[i+1]-_predictions[i]) for i in range(len(_predictions)-1)]
+        _last_numbers.append(_predictions[-1])
+    return
 
 
 @app.cell
