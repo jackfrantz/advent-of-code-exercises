@@ -128,18 +128,16 @@ def _(mo):
 
 @app.cell
 def _():
-    sample = '''....#........
-    .........#...
-    #............
-    .............
-    .............
-    ........#....
-    .#...........
-    ............#
-    .............
-    .............
-    .........#...
-    #....#.......'''
+    sample = '''...#......
+    .......#..
+    #.........
+    ..........
+    ......#...
+    .#........
+    .........#
+    ..........
+    .......#..
+    #...#.....'''
     return (sample,)
 
 
@@ -147,16 +145,103 @@ def _():
 def _(np, sample):
     sample_lines = sample.splitlines()
     sample_grid = np.array([list(line) for line in sample_lines])
-    sample_grid
-    return sample_grid, sample_lines
+    print(sample_grid)
+
+    def add_rows(grid):
+        empty_rows = np.where(np.all(sample_grid == '.', axis=1))[0]
+        for i, row in enumerate(empty_rows):
+            new_row = np.array(['.'] * grid.shape[1])
+            grid = np.insert(grid, row+i, new_row, axis=0)
+            print(f'new row row at {row+i}')
+        return grid
+        
+    add_rows(sample_grid)
+    return add_rows, sample_grid, sample_lines
 
 
-app._unparsable_cell(
-    r"""
-    sample_grid.
-    """,
-    name="_"
-)
+@app.cell
+def _(np, sample_grid):
+    empty_rows = np.where(np.all(sample_grid == '.', axis=1))[0]
+    empty_rows
+    return (empty_rows,)
+
+
+@app.cell
+def _(np, sample_grid):
+    empty_cols = np.where(np.all(sample_grid == '.', axis=0))[0]
+    empty_cols
+    return (empty_cols,)
+
+
+@app.cell
+def _(np, sample_grid):
+    def add_cols(grid):
+        empty_cols = np.where(np.all(sample_grid == '.', axis=0))[0]
+        for i, col in enumerate(empty_cols):
+            new_col = np.array(['.'] * grid.shape[0])
+            grid = np.insert(grid, col+i, new_col, axis=1)
+            print(f'new col col at {col+i}')
+        return grid
+        
+    add_cols(sample_grid)
+    return (add_cols,)
+
+
+@app.cell
+def _(add_cols, add_rows, sample_grid):
+    def expand_grid(grid):
+        grid = add_cols(grid)
+        grid = add_rows(grid)
+        return grid
+
+    expand_grid(sample_grid)
+    return (expand_grid,)
+
+
+@app.cell
+def _(expand_grid, np, sample_grid):
+    expanded = expand_grid(sample_grid)
+    galaxy_positions = np.argwhere(expanded == '#')
+    print(galaxy_positions)
+
+
+    total_distance = 0
+    for i, pos in enumerate(galaxy_positions):
+        row, col = pos
+        print(pos)
+        print('*'*10)
+        for pair_i in range(i+1,len(galaxy_positions)):
+            print(pair_i)
+            pair_row, pair_col = galaxy_positions[pair_i]
+            distance = abs(row-pair_row)+abs(col-pair_col)
+            total_distance+=distance
+    print(total_distance)
+        
+        
+    return (
+        col,
+        distance,
+        expanded,
+        galaxy_positions,
+        i,
+        pair_col,
+        pair_i,
+        pair_row,
+        pos,
+        row,
+        total_distance,
+    )
+
+
+@app.cell
+def _():
+    list(range(5))
+    return
+
+
+@app.cell
+def _():
+    return
 
 
 if __name__ == "__main__":
