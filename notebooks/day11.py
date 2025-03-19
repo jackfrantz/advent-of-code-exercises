@@ -216,12 +216,31 @@ def _(expand_grid, np, sample_grid):
             distance = abs(row-pair_row)+abs(col-pair_col)
             total_distance+=distance
     print(total_distance)
-        
-        
+
+    day11 = open('./data/day11.txt').read()
+
+    day11 = np.array([list(line) for line in day11.splitlines()])
+    expanded_day11 = expand_grid(day11)
+    galaxy_positions = np.argwhere(expanded_day11 == '#')
+    print(galaxy_positions)
+
+    total_distance = 0
+    for i, pos in enumerate(galaxy_positions):
+        row, col = pos
+        print(pos)
+        print('*'*10)
+        for pair_i in range(i+1,len(galaxy_positions)):
+            print(pair_i)
+            pair_row, pair_col = galaxy_positions[pair_i]
+            distance = abs(row-pair_row)+abs(col-pair_col)
+            total_distance+=distance
+    print(total_distance)
     return (
         col,
+        day11,
         distance,
         expanded,
+        expanded_day11,
         galaxy_positions,
         i,
         pair_col,
