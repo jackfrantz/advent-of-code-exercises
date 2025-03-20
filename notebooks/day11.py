@@ -119,8 +119,6 @@ def _(mo):
         In this example, after expanding the universe, the sum of the shortest path between all 36 pairs of galaxies is 374.
 
         Expand the universe, then find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?
-
-
         """
     )
     return
@@ -148,13 +146,13 @@ def _(np, sample):
     print(sample_grid)
 
     def add_rows(grid):
-        empty_rows = np.where(np.all(sample_grid == '.', axis=1))[0]
+        empty_rows = np.where(np.all(grid == '.', axis=1))[0]
         for i, row in enumerate(empty_rows):
             new_row = np.array(['.'] * grid.shape[1])
             grid = np.insert(grid, row+i, new_row, axis=0)
-            print(f'new row row at {row+i}')
+            print(f'new row at {row+i}')
         return grid
-        
+
     add_rows(sample_grid)
     return add_rows, sample_grid, sample_lines
 
@@ -176,13 +174,13 @@ def _(np, sample_grid):
 @app.cell
 def _(np, sample_grid):
     def add_cols(grid):
-        empty_cols = np.where(np.all(sample_grid == '.', axis=0))[0]
+        empty_cols = np.where(np.all(grid == '.', axis=0))[0]
         for i, col in enumerate(empty_cols):
             new_col = np.array(['.'] * grid.shape[0])
             grid = np.insert(grid, col+i, new_col, axis=1)
-            print(f'new col col at {col+i}')
+            print(f'new col at {col+i}')
         return grid
-        
+
     add_cols(sample_grid)
     return (add_cols,)
 
@@ -190,12 +188,19 @@ def _(np, sample_grid):
 @app.cell
 def _(add_cols, add_rows, sample_grid):
     def expand_grid(grid):
-        grid = add_cols(grid)
         grid = add_rows(grid)
+        grid = add_cols(grid)
         return grid
 
     expand_grid(sample_grid)
     return (expand_grid,)
+
+
+@app.cell
+def _(expand_grid, np):
+    _day11 = np.array([list(line) for line in (open('./data/day11.txt').read()).splitlines()])
+    expand_grid(_day11)
+    return
 
 
 @app.cell
@@ -217,30 +222,11 @@ def _(expand_grid, np, sample_grid):
             total_distance+=distance
     print(total_distance)
 
-    day11 = open('./data/day11.txt').read()
 
-    day11 = np.array([list(line) for line in day11.splitlines()])
-    expanded_day11 = expand_grid(day11)
-    galaxy_positions = np.argwhere(expanded_day11 == '#')
-    print(galaxy_positions)
-
-    total_distance = 0
-    for i, pos in enumerate(galaxy_positions):
-        row, col = pos
-        print(pos)
-        print('*'*10)
-        for pair_i in range(i+1,len(galaxy_positions)):
-            print(pair_i)
-            pair_row, pair_col = galaxy_positions[pair_i]
-            distance = abs(row-pair_row)+abs(col-pair_col)
-            total_distance+=distance
-    print(total_distance)
     return (
         col,
-        day11,
         distance,
         expanded,
-        expanded_day11,
         galaxy_positions,
         i,
         pair_col,
@@ -254,6 +240,54 @@ def _(expand_grid, np, sample_grid):
 
 @app.cell
 def _():
+    day11 = open('./data/day11.txt').read()
+    day11
+    return (day11,)
+
+
+@app.cell
+def _(day11, np):
+    def convert_to_grid(file):
+        lines = file.splitlines()
+        grid = np.array([list(line) for line in lines])
+        return grid
+
+    convert_to_grid(day11)
+    return (convert_to_grid,)
+
+
+@app.cell
+def _(convert_to_grid, day11, expand_grid):
+    expand_grid(convert_to_grid(day11))
+    return
+
+
+@app.cell
+def _(day11, expand_grid, np):
+    def solver(file):
+        grid = np.array([list(line) for line in file.splitlines()])
+        expanded_grid = expand_grid(grid)
+        galaxy_positions = np.argwhere(expanded_grid == '#')
+        print(galaxy_positions)
+    
+        total_distance = 0
+        for i, pos in enumerate(galaxy_positions):
+            row, col = pos
+            #print(pos)
+            #print('*'*10)
+            for pair_i in range(i+1,len(galaxy_positions)):
+                #print(pair_i)
+                pair_row, pair_col = galaxy_positions[pair_i]
+                distance = abs(row-pair_row)+abs(col-pair_col)
+                total_distance+=distance
+        return total_distance
+
+    solver(day11)
+    return (solver,)
+
+
+@app.cell
+def _():
     list(range(5))
     return
 
@@ -261,6 +295,58 @@ def _():
 @app.cell
 def _():
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        #Part Two
+        The galaxies are much older (and thus much farther apart) than the researcher initially estimated.
+
+        Now, instead of the expansion you did before, make each empty row or column one million times larger. That is, each empty row should be replaced with 1000000 empty rows, and each empty column should be replaced with 1000000 empty columns.
+
+        (In the example above, if each empty row or column were merely 10 times larger, the sum of the shortest paths between every pair of galaxies would be 1030. If each empty row or column were merely 100 times larger, the sum of the shortest paths between every pair of galaxies would be 8410. However, your universe will need to expand far beyond these values.)
+
+        Starting with the same initial image, expand the universe according to these new rules, then find the length of the shortest path between every pair of galaxies. What is the sum of these lengths?
+        """
+    )
+    return
+
+
+@app.cell
+def _(convert_to_grid, day11, np):
+    def find_empty_space(grid):
+        empty_cols = np.where(np.all(grid == '.', axis=0))[0]
+        empty_rows = np.where(np.all(grid == '.', axis=1))[0]
+        return empty_rows, empty_cols
+
+    find_empty_space(convert_to_grid(day11))
+    return (find_empty_space,)
+
+
+@app.cell
+def _(day11, expanded_grid, np):
+    def solverv2(file):
+        grid = np.array([list(line) for line in file.splitlines()])
+        #expanded_grid = expand_grid(grid)
+        galaxy_positions = np.argwhere(expanded_grid == '#')
+        print(galaxy_positions)
+    
+        total_distance = 0
+        for i, pos in enumerate(galaxy_positions):
+            row, col = pos
+            #print(pos)
+            #print('*'*10)
+            for pair_i in range(i+1,len(galaxy_positions)):
+                #print(pair_i)
+                pair_row, pair_col = galaxy_positions[pair_i]
+                distance = abs(row-pair_row)+abs(col-pair_col)
+                total_distance+=distance
+        return total_distance
+
+    solverv2(day11)
+    return (solverv2,)
 
 
 if __name__ == "__main__":
