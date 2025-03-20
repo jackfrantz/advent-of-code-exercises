@@ -326,27 +326,51 @@ def _(convert_to_grid, day11, np):
 
 
 @app.cell
-def _(day11, expanded_grid, np):
+def _(convert_to_grid, day11, find_empty_space):
+    _empty_rows = find_empty_space(convert_to_grid(day11))[0]
+    _empty_rows
+    _filtered = _empty_rows[(_empty_rows>0) & (_empty_rows<200)]
+    _filtered
+    return
+
+
+@app.cell
+def _():
+    def expanded_pos(row, col, empty_rows, empty_cols):
+        exp_row = row + (len(empty_rows[(empty_rows<row)])*999999)
+        exp_col = col + (len(empty_cols[(empty_cols<col)])*999999)
+        return exp_row, exp_col
+    return (expanded_pos,)
+
+
+@app.cell
+def _(day11, expanded_pos, find_empty_space, np):
     def solverv2(file):
         grid = np.array([list(line) for line in file.splitlines()])
         #expanded_grid = expand_grid(grid)
-        galaxy_positions = np.argwhere(expanded_grid == '#')
-        print(galaxy_positions)
-    
+        galaxy_positions = np.argwhere(grid == '#')
+        empty_rows, empty_cols = find_empty_space(grid)
         total_distance = 0
-        for i, pos in enumerate(galaxy_positions):
-            row, col = pos
+        expand_coordinate = lambda pos: expanded_pos(pos[0], pos[1], empty_rows, empty_cols)
+        exp_positions = np.array([expand_coordinate(pos) for pos in galaxy_positions])
+        for i, pos in enumerate(exp_positions):
             #print(pos)
+            row, col = pos
             #print('*'*10)
-            for pair_i in range(i+1,len(galaxy_positions)):
+            for pair_i in range(i+1,len(exp_positions)):
                 #print(pair_i)
-                pair_row, pair_col = galaxy_positions[pair_i]
+                pair_row, pair_col = exp_positions[pair_i]
                 distance = abs(row-pair_row)+abs(col-pair_col)
                 total_distance+=distance
         return total_distance
 
     solverv2(day11)
     return (solverv2,)
+
+
+@app.cell
+def _():
+    return
 
 
 if __name__ == "__main__":
