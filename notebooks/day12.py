@@ -101,7 +101,15 @@ def _():
     ????.######..#####. 1,6,5
     ?###???????? 3,2,1'''
     print(sample)
-    return (sample,)
+
+    sample_key = '''#.#.### 1,1,3
+    .#...#....###. 1,1,3
+    .#.###.#.###### 1,3,1,6
+    ####.#...#... 4,1,1
+    #....######..#####. 1,6,5
+    .###.##....# 3,2,1'''
+    print(sample_key)
+    return sample, sample_key
 
 
 @app.cell
@@ -110,7 +118,63 @@ def _(sample):
     print(sample_line_3)
     springs, conditions = sample_line_3.split()
     print(springs)
+    print(conditions)
     return conditions, sample_line_3, springs
+
+
+@app.cell
+def _(sample, sample_key):
+    def get_lists(file):
+        springs = []
+        conditions = []
+        for line in file.splitlines():
+            springs.append(line.split(' ')[0])
+            conditions.append([int(x) for x in line.split(' ')[1].split(',')])
+        return springs, conditions
+    
+    springs_sample, conditions_sample = get_lists(sample)
+    springs_sample_key, conditions_sample_key = get_lists(sample_key)
+    springs_sample_key
+    return (
+        conditions_sample,
+        conditions_sample_key,
+        get_lists,
+        springs_sample,
+        springs_sample_key,
+    )
+
+
+@app.cell
+def _(conditions_sample_key, springs_sample_key):
+    def match_condition(springs, conditions):
+        n = len(springs)
+        runs = []
+
+        i = 0
+        while i < n:
+            while i < n and not springs[i]:
+                i += 1
+            if i == n:
+                break
+            j = i 
+            c = 0
+            while j<n and springs[j]:
+                j+=1
+                c+=1
+
+            runs.append(c)
+            i=j
+        print(runs)
+        return runs == conditions
+        
+    match_condition(springs_sample_key[0], conditions_sample_key[0])
+    return (match_condition,)
+
+
+@app.cell
+def _(springs_sample):
+    springs_sample[0][0]
+    return
 
 
 @app.cell
