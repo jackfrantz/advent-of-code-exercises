@@ -7,7 +7,8 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    return (mo,)
+    import numpy as np
+    return mo, np
 
 
 @app.cell(hide_code=True)
@@ -107,6 +108,99 @@ def _():
     ..##..###
     #....#..#'''
     return (sample,)
+
+
+@app.cell
+def _(sample):
+    sample_0 = sample.split('\n\n')[0]
+    sample_0
+    return (sample_0,)
+
+
+@app.cell
+def _(sample_0):
+    sample_0_lines = sample_0.splitlines()
+    sample_0_lines
+    return (sample_0_lines,)
+
+
+@app.cell
+def _(np, sample_0_lines):
+    sample_0_array = np.array([list(line) for line in sample_0_lines])
+    sample_0_array
+    return (sample_0_array,)
+
+
+@app.cell
+def _(np, sample, sample_0):
+    def array_pattern(pattern):
+        pattern_lines = pattern.splitlines()
+        pattern_array = np.array([list(line) for line in pattern_lines])
+        return pattern_array
+
+    array_pattern(sample_0)
+    sample_1_array = array_pattern(sample.split('\n\n')[1])
+    return array_pattern, sample_1_array
+
+
+@app.cell
+def _(np, sample_0_array):
+    col = 4
+    np.array_equal(sample_0_array[:, col], sample_0_array[:, col+1])
+    return (col,)
+
+
+@app.cell
+def _(sample_0_array):
+    sample_0_array.shape
+    return
+
+
+@app.cell
+def _(sample_1_array):
+    print(sample_1_array)
+    print('*'*40)
+    print(sample_1_array[0:2][::-1])
+    return
+
+
+@app.cell
+def _(np, sample_1_array):
+    def vert_reflection(pattern_array):
+        n_cols = pattern_array.shape[1]
+        for i in range(n_cols-1):
+            if np.array_equal(pattern_array[:, i], pattern_array[:, i+1]) and np.array_equal(pattern_array[:, i-1], pattern_array[:, i+2]):
+                return i+1
+        return 0
+    
+    vert_reflection(sample_1_array)
+    return (vert_reflection,)
+
+
+@app.cell
+def _(np, sample_0_array):
+    def horiz_reflection(pattern_array):
+        n_rows = pattern_array.shape[1]
+        for i in range(n_rows-1):
+            if np.array_equal(pattern_array[i], pattern_array[i+1]) and np.array_equal(pattern_array[i-1], pattern_array[i+2]):
+                return i+1
+        return 0
+
+    horiz_reflection(sample_0_array)
+    return (horiz_reflection,)
+
+
+@app.cell
+def _(array_pattern):
+    def solve(text):
+    
+        patterns = text.split('\n\n')
+    
+        for pattern in patterns:
+            pattern_array = array_pattern(pattern)
+        
+        pass
+    return (solve,)
 
 
 @app.cell
