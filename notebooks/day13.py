@@ -77,8 +77,6 @@ def _(mo):
         To summarize your pattern notes, add up the number of columns to the left of each vertical line of reflection; to that, also add 100 multiplied by the number of rows above each horizontal line of reflection. In the above example, the first pattern's vertical line has 5 columns to its left and the second pattern's horizontal line has 4 rows above it, a total of 405.
 
         Find the line of reflection in each of the patterns in your notes. What number do you get after summarizing all of your notes?
-
-
         """
     )
     return
@@ -165,15 +163,20 @@ def _(sample_1_array):
 
 
 @app.cell
-def _(np, sample_1_array):
+def _(np, sample_0_array):
     def vert_reflection(pattern_array):
         n_cols = pattern_array.shape[1]
         for i in range(n_cols-1):
-            if np.array_equal(pattern_array[:, i], pattern_array[:, i+1]) and np.array_equal(pattern_array[:, i-1], pattern_array[:, i+2]):
-                return i+1
+            if np.array_equal(pattern_array[:, i], pattern_array[:, i+1]):
+                for j in range(0, i):
+                    sym = np.array_equal(pattern_array[:, i-j], pattern_array[:, i+1+j])
+                    if not sym:
+                        break
+                if sym:
+                    return i+1
         return 0
-    
-    vert_reflection(sample_1_array)
+
+    vert_reflection(sample_0_array)
     return (vert_reflection,)
 
 
@@ -182,8 +185,16 @@ def _(np, sample_0_array):
     def horiz_reflection(pattern_array):
         n_rows = pattern_array.shape[1]
         for i in range(n_rows-1):
-            if np.array_equal(pattern_array[i], pattern_array[i+1]) and np.array_equal(pattern_array[i-1], pattern_array[i+2]):
-                return i+1
+            print(f'i is {i}')
+            if np.array_equal(pattern_array[i], pattern_array[i+1]):
+                for j in range(1, i):
+                    print(f'j is {j}')
+                    sym = np.array_equal(pattern_array[i-j], pattern_array[i+1+j])
+                    print(sym)
+                    if not sym:
+                        break
+                if sym:
+                    return i+1
         return 0
 
     horiz_reflection(sample_0_array)
@@ -193,12 +204,12 @@ def _(np, sample_0_array):
 @app.cell
 def _(array_pattern):
     def solve(text):
-    
+
         patterns = text.split('\n\n')
-    
+
         for pattern in patterns:
             pattern_array = array_pattern(pattern)
-        
+
         pass
     return (solve,)
 
